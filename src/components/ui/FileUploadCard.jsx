@@ -10,7 +10,6 @@ import Button from "./Button";
 import Icon from "./Icon";
 
 export default function FileUploadCard({
-  title,
   kind,
   action,
   children,
@@ -72,8 +71,6 @@ function EditFileDialog({ kind, onClose }) {
     return () => {};
   }, [kind]);
 
-  console.log(documents);
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
@@ -88,8 +85,8 @@ function EditFileDialog({ kind, onClose }) {
         </div>
         <div className="space-y-4 h-[40vh] overflow-y-scroll">
           {documents && documents.length > 0 ? (
-            documents.map((item, index) => (
-              <DocumentItem key={index} kind={kind} doc={item} />
+            documents.map((item) => (
+              <DocumentItem key={item} kind={kind} doc={item} />
             ))
           ) : (
             <p>No documentations</p>
@@ -166,6 +163,13 @@ function DocumentItem({ kind, doc }) {
           icon="trash-2"
           onClick={handleRemove}
           title="Remove"
+        />
+        <Button
+          variant="secondary"
+          size="xs"
+          icon="check"
+          onClick={handleRemove}
+          title="Add to check"
         />
       </div>
     </div>

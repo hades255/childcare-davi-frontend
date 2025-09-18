@@ -89,10 +89,9 @@ const UploadSection = memo(function UploadSection({
     <FileUploadCard
       className="min-w-[320px]"
       kind={kind}
-      title={title}
       action={
         <Button onClick={handlePickAndUpload} disabled={isUploading} size="sm">
-          {isUploading ? "Uploading…" : title}
+          {isUploading ? "Uploading…" : `Upload ${title}`}
         </Button>
       }
     >
@@ -117,6 +116,13 @@ const UploadSection = memo(function UploadSection({
     </FileUploadCard>
   );
 });
+
+const uploadSectionItems = [
+  { title: "Staff-Planning", kind: FileKind.STAFF_PLANNING },
+  { title: "Child-Planning", kind: FileKind.CHILD_PLANNING },
+  { title: "VGC List (JSON)", kind: FileKind.CHILD_REGISTRATION },
+  { title: "Child-Registration", kind: FileKind.VGC_LIST },
+];
 
 export default function ChecksPage() {
   const [enableBkr, setEnableBkr] = useState(true);
@@ -160,6 +166,24 @@ export default function ChecksPage() {
       [kind]: (prev[kind] || []).filter((f) => f.key !== key),
     }));
   }, []);
+
+  const handleSubAdd = useCallback(function handleSubAdd(kind, key, filename) {
+    setFileMap((prev) => {
+      const existing = prev[kind] || [];
+      // Avoid duplicates by key
+      if (existing.some((x) => x.key === key)) return prev;
+      return {
+        ...prev,
+        [kind]: [
+          ...existing,
+          {
+            key,
+            path: `/documents/${kind}/${filename}`,
+          },
+        ],
+      };
+    });
+  });
 
   const [isStartingCheck, setIsStartingCheck] = useState(false);
   const [lastCheckId, setLastCheckId] = useState("");
@@ -288,41 +312,18 @@ export default function ChecksPage() {
       </div>
 
       <div className="grid grid-cols-1">
-        {requiredVisibleKinds.includes(FileKind.STAFF_PLANNING) && (
-          <UploadSection
-            title="Upload Staff-Planning"
-            kind={FileKind.STAFF_PLANNING}
-            files={fileMap[FileKind.STAFF_PLANNING]}
-            onUploaded={handleUploaded}
-            onRemoved={handleRemoved}
-          />
-        )}
-        {requiredVisibleKinds.includes(FileKind.CHILD_PLANNING) && (
-          <UploadSection
-            title="Upload Child-Planning"
-            kind={FileKind.CHILD_PLANNING}
-            files={fileMap[FileKind.CHILD_PLANNING]}
-            onUploaded={handleUploaded}
-            onRemoved={handleRemoved}
-          />
-        )}
-        {enableVgc && (
-          <UploadSection
-            title="Upload VGC List (JSON)"
-            kind={FileKind.VGC_LIST}
-            files={fileMap[FileKind.VGC_LIST]}
-            onUploaded={handleUploaded}
-            onRemoved={handleRemoved}
-          />
-        )}
-        {enableThreeHours && (
-          <UploadSection
-            title="Upload Child-Registration"
-            kind={FileKind.CHILD_REGISTRATION}
-            files={fileMap[FileKind.CHILD_REGISTRATION]}
-            onUploaded={handleUploaded}
-            onRemoved={handleRemoved}
-          />
+        {uploadSectionItems.map(
+          (item, index) =>
+            requiredVisibleKinds.includes(item.kind) && (
+              <UploadSection
+                key={index}
+                title={item.title}
+                kind={item.kind}
+                files={fileMap[item.kind]}
+                onUploaded={handleUploaded}
+                onRemoved={handleRemoved}
+              />
+            )
         )}
       </div>
 
@@ -355,7 +356,11 @@ export default function ChecksPage() {
             placeholder="Enter check id"
             className="px-2 py-1 border border-gray-300 rounded-md"
           />
-          <Button onClick={handleGetProgress} variant="secondary" icon="refresh-cw">
+          <Button
+            onClick={handleGetProgress}
+            variant="secondary"
+            icon="refresh-cw"
+          >
             Get Progress
           </Button>
         </div>

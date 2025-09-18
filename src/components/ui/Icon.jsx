@@ -1,5 +1,17 @@
 export default function Icon({ name, size = 16, className = "", ...props }) {
   const icons = {
+    check: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M16.46 7.455a1.125 1.125 0 0 1 1.605 1.575l-5.985 7.485a1.125 1.125 0 0 1-1.62.03L6.486 12.576a1.125 1.125 0 1 1 1.59-1.59l3.14 3.14 5.244-6.67z" />
+      </svg>
+    ),
     edit: (
       <svg
         viewBox="0 0 24 24"
