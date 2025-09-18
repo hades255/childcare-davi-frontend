@@ -50,6 +50,7 @@ export function getFileViewUrl(fileKey) {
   return `${API_BASE_URL}/files/${encodeURIComponent(fileKey)}/view`;
 }
 
+//  todo    create remove file endpoint on server side
 export async function removeFile(fileKey) {
   return request(`/files/${encodeURIComponent(fileKey)}`, {
     method: "DELETE",
@@ -66,6 +67,12 @@ export async function startCheck(body) {
 
 export async function getCheckProgress(checkId) {
   return request(`/checks/${encodeURIComponent(checkId)}`, {
+    method: "GET",
+  });
+}
+
+export async function getModuleDocuments(module) {
+  return request(`/requirements?modules=${encodeURIComponent(module)}`, {
     method: "GET",
   });
 }

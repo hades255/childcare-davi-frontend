@@ -1,4 +1,9 @@
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
+import FileUploadCard from "./ui/FileUploadCard";
+import Button from "./ui/Button";
+import Toggle from "./ui/Toggle";
+import FileItem from "./ui/FileItem";
+import Icon from "./ui/Icon";
 import {
   FileKind,
   uploadFile,
@@ -10,48 +15,61 @@ import {
   getCheckProgress,
 } from "../services/api";
 
-function Checkbox({ label, checked, onChange, disabled }) {
+const Checkbox = memo(function Checkbox({
+  label,
+  checked,
+  onChange,
+  disabled,
+  readOnly,
+}) {
   return (
-    <label style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={onChange}
-        disabled={disabled}
-      />
-      <span>{label}</span>
-    </label>
+    <Toggle
+      label={label}
+      checked={checked}
+      onChange={onChange}
+      disabled={disabled}
+      readOnly={readOnly}
+    />
   );
-}
+});
 
-function UploadSection({ title, kind, files, onUploaded, onRemoved }) {
+const UploadSection = memo(function UploadSection({
+  title,
+  kind,
+  files,
+  onUploaded,
+  onRemoved,
+}) {
   const [isUploading, setIsUploading] = useState(false);
 
-  async function handlePickAndUpload() {
-    try {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept =
-        kind === FileKind.VGC_LIST
-          ? "application/json"
-          : "image/*,application/pdf";
-      input.onchange = async () => {
-        if (input.files && input.files[0]) {
-          setIsUploading(true);
-          try {
-            const result = await uploadFile(input.files[0], kind);
-            onUploaded(kind, result);
-          } finally {
-            setIsUploading(false);
+  const handlePickAndUpload = useCallback(
+    async function handlePickAndUpload() {
+      try {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept =
+          kind === FileKind.VGC_LIST
+            ? "application/json"
+            : "image/*,application/pdf";
+        input.onchange = async () => {
+          if (input.files && input.files[0]) {
+            setIsUploading(true);
+            try {
+              const result = await uploadFile(input.files[0], kind);
+              onUploaded(kind, result);
+            } finally {
+              setIsUploading(false);
+            }
           }
-        }
-      };
-      input.click();
-    } catch (e) {
-      console.error(e);
-      alert(e.message || "Upload failed");
-    }
-  }
+        };
+        input.click();
+      } catch (e) {
+        console.error(e);
+        alert(e.message || "Upload failed");
+      }
+    },
+    [kind, onUploaded]
+  );
 
   async function handleCheckStatus(fileKey) {
     try {
@@ -63,94 +81,45 @@ function UploadSection({ title, kind, files, onUploaded, onRemoved }) {
     }
   }
 
+  function getFileName(filePath) {
+    return filePath.split(/[/\\]/).pop().substr(9);
+  }
+
   return (
-    <div
-      style={{
-        border: "1px solid #e5e7eb",
-        borderRadius: 8,
-        padding: 12,
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-      }}
+    <FileUploadCard
+      className="min-w-[320px]"
+      kind={kind}
+      title={title}
+      action={
+        <Button onClick={handlePickAndUpload} disabled={isUploading} size="sm">
+          {isUploading ? "Uploading…" : title}
+        </Button>
+      }
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <strong>{title}</strong>
-        <button onClick={handlePickAndUpload} disabled={isUploading}>
-          {isUploading ? "Uploading…" : "Upload"}
-        </button>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div className="flex flex-col gap-1.5">
         {files.length === 0 && (
-          <span style={{ color: "#6b7280" }}>No files uploaded yet.</span>
+          <span className="text-gray-500">No files uploaded yet.</span>
         )}
         {files.map((f) => (
-          <div
+          <FileItem
             key={f.key}
-            style={{
-              display: "flex",
-              gap: 8,
-              alignItems: "center",
-              justifyContent: "space-between",
+            file={{ key: f.key, path: getFileName(f.path || "") }}
+            onView={() => window.open(getFileViewUrl(f.key), "_blank")}
+            onDownload={() => window.open(getFileDownloadUrl(f.path), "_blank")}
+            onStatus={() => handleCheckStatus(f.key)}
+            onRemove={async () => {
+              await removeFile(f.key);
+              onRemoved(kind, f.key);
             }}
-          >
-            <div
-              style={{
-                display: "flex",
-                gap: 8,
-                alignItems: "center",
-                overflow: "hidden",
-              }}
-            >
-              <span style={{ fontFamily: "monospace" }}>{f.key}</span>
-              {f.path ? (
-                <span
-                  style={{
-                    color: "#6b7280",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {f.path}
-                </span>
-              ) : null}
-            </div>
-            <div style={{ display: "flex", gap: 6 }}>
-              <a href={getFileViewUrl(f.key)} target="_blank" rel="noreferrer">
-                View
-              </a>
-              <a
-                href={getFileDownloadUrl(f.path)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Download
-              </a>
-              <button onClick={() => handleCheckStatus(f.key)}>Status</button>
-              <button
-                onClick={async () => {
-                  await removeFile(f.key);
-                  onRemoved(kind, f.key);
-                }}
-              >
-                Remove
-              </button>
-            </div>
-          </div>
+          />
         ))}
       </div>
-    </div>
+    </FileUploadCard>
   );
-}
+});
 
 export default function ChecksPage() {
-  const [enableBkr, setEnableBkr] = useState(false);
+  const [enableBkr, setEnableBkr] = useState(true);
   const [enableVgc, setEnableVgc] = useState(false);
   const [enableThreeHours, setEnableThreeHours] = useState(false);
 
@@ -168,37 +137,64 @@ export default function ChecksPage() {
     return Array.from(kinds);
   }, [enableVgc, enableThreeHours]);
 
-  function handleUploaded(kind, res) {
+  const handleUploaded = useCallback(function handleUploaded(kind, res) {
     const item = {
       key: res.objectKey,
       path: res.fileUrl,
       status: true,
     };
-    setFileMap((prev) => ({
-      ...prev,
-      [kind]: [...(prev[kind] || []), item],
-    }));
-  }
+    setFileMap((prev) => {
+      const existing = prev[kind] || [];
+      // Avoid duplicates by key
+      if (existing.some((x) => x.key === item.key)) return prev;
+      return {
+        ...prev,
+        [kind]: [...existing, item],
+      };
+    });
+  }, []);
 
-  function handleRemoved(kind, key) {
+  const handleRemoved = useCallback(function handleRemoved(kind, key) {
     setFileMap((prev) => ({
       ...prev,
       [kind]: (prev[kind] || []).filter((f) => f.key !== key),
     }));
-  }
+  }, []);
 
   const [isStartingCheck, setIsStartingCheck] = useState(false);
   const [lastCheckId, setLastCheckId] = useState("");
   const [progressCheckId, setProgressCheckId] = useState("");
   const [progressResult, setProgressResult] = useState(null);
 
-  const hasRequiredFiles =
-    (fileMap[FileKind.STAFF_PLANNING]?.length || 0) > 0 &&
-    (fileMap[FileKind.CHILD_PLANNING]?.length || 0) > 0;
+  const validation = useMemo(() => {
+    const hasStaff = (fileMap[FileKind.STAFF_PLANNING]?.length || 0) > 0;
+    const hasChildPlan = (fileMap[FileKind.CHILD_PLANNING]?.length || 0) > 0;
+    const hasVgc = (fileMap[FileKind.VGC_LIST]?.length || 0) > 0;
+    const hasReg = (fileMap[FileKind.CHILD_REGISTRATION]?.length || 0) > 0;
+
+    const missing = [];
+    if (!hasStaff) missing.push("staff-planning");
+    if (!hasChildPlan) missing.push("child-planning");
+    if (enableVgc && !hasVgc) missing.push("vgc_list");
+    if (enableThreeHours && !hasReg) missing.push("child-registration");
+
+    return {
+      hasStaff,
+      hasChildPlan,
+      hasVgc,
+      hasReg,
+      missing,
+      canStart:
+        hasStaff &&
+        hasChildPlan &&
+        (!enableVgc || hasVgc) &&
+        (!enableThreeHours || hasReg),
+    };
+  }, [fileMap, enableVgc, enableThreeHours]);
 
   async function handleStartCheck() {
-    if (!hasRequiredFiles) {
-      alert("Please upload staff-planning and child-planning first.");
+    if (!validation.canStart) {
+      alert(`Missing required documents: ${validation.missing.join(", ")}`);
       return;
     }
     const modules = [];
@@ -211,7 +207,10 @@ export default function ChecksPage() {
       alert("Please upload VGC list (JSON) to run VGC.");
       return;
     }
-    if (enableThreeHours && (fileMap[FileKind.CHILD_REGISTRATION]?.length || 0) === 0) {
+    if (
+      enableThreeHours &&
+      (fileMap[FileKind.CHILD_REGISTRATION]?.length || 0) === 0
+    ) {
       alert("Please upload child-registration to run 3-UURs.");
       return;
     }
@@ -220,8 +219,12 @@ export default function ChecksPage() {
     const documentKeys = [
       ...(fileMap[FileKind.STAFF_PLANNING] || []).map((f) => f.key),
       ...(fileMap[FileKind.CHILD_PLANNING] || []).map((f) => f.key),
-      ...(enableVgc ? (fileMap[FileKind.VGC_LIST] || []).map((f) => f.key) : []),
-      ...(enableThreeHours ? (fileMap[FileKind.CHILD_REGISTRATION] || []).map((f) => f.key) : []),
+      ...(enableVgc
+        ? (fileMap[FileKind.VGC_LIST] || []).map((f) => f.key)
+        : []),
+      ...(enableThreeHours
+        ? (fileMap[FileKind.CHILD_REGISTRATION] || []).map((f) => f.key)
+        : []),
     ];
 
     const source = "flexkids";
@@ -261,23 +264,16 @@ export default function ChecksPage() {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
-        padding: 16,
-        maxWidth: 980,
-        margin: "0 auto",
-      }}
-    >
-      <h2>BKR / VGC / 3-UURs Checks</h2>
+    <div className="flex flex-col gap-3 p-4 max-w-[980px] mx-auto">
+      <h2 className="text-xl font-semibold">BKR / VGC / 3-UURs Checks</h2>
 
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+      <div className="flex gap-4 flex-wrap">
         <Checkbox
           label="BKR"
           checked={enableBkr}
           onChange={() => setEnableBkr((v) => !v)}
+          readOnly={true}
+          disabled={true}
         />
         <Checkbox
           label="VGC"
@@ -291,7 +287,7 @@ export default function ChecksPage() {
         />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
+      <div className="grid grid-cols-1">
         {requiredVisibleKinds.includes(FileKind.STAFF_PLANNING) && (
           <UploadSection
             title="Upload Staff-Planning"
@@ -330,57 +326,41 @@ export default function ChecksPage() {
         )}
       </div>
 
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <button
+      <div className="flex gap-2 items-center">
+        <Button
           onClick={handleStartCheck}
-          disabled={!hasRequiredFiles || isStartingCheck}
+          disabled={!validation.canStart || isStartingCheck}
+          icon={isStartingCheck ? "loader-2" : "play"}
+          title={
+            !validation.canStart && validation.missing.length
+              ? `Missing: ${validation.missing.join(", ")}`
+              : undefined
+          }
         >
           {isStartingCheck ? "Starting…" : "Start Check"}
-        </button>
+        </Button>
         {lastCheckId && (
-          <span style={{ color: "#6b7280" }}>
+          <span className="text-gray-500">
             Last Check ID: <strong>{lastCheckId}</strong>
           </span>
         )}
       </div>
 
-      <div
-        style={{
-          borderTop: "1px solid #e5e7eb",
-          paddingTop: 12,
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-        }}
-      >
+      <div className="border-t border-gray-200 pt-3 flex flex-col gap-2">
         <strong>Check Progress</strong>
-        <div
-          style={{
-            display: "flex",
-            gap: 8,
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="flex gap-2 items-center flex-wrap">
           <input
             value={progressCheckId}
             onChange={(e) => setProgressCheckId(e.target.value)}
             placeholder="Enter check id"
-            style={{ padding: 6, border: "1px solid #d1d5db", borderRadius: 6 }}
+            className="px-2 py-1 border border-gray-300 rounded-md"
           />
-          <button onClick={handleGetProgress}>Get Progress</button>
+          <Button onClick={handleGetProgress} variant="secondary" icon="refresh-cw">
+            Get Progress
+          </Button>
         </div>
         {progressResult && (
-          <pre
-            style={{
-              background: "#f9fafb",
-              border: "1px solid #e5e7eb",
-              padding: 12,
-              borderRadius: 6,
-              maxHeight: 320,
-              overflow: "auto",
-            }}
-          >
+          <pre className="bg-gray-50 border border-gray-200 p-3 rounded-md max-h-80 overflow-auto">
             {typeof progressResult === "string"
               ? progressResult
               : JSON.stringify(progressResult, null, 2)}

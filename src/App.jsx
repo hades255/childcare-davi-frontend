@@ -1,4 +1,3 @@
-import './App.css'
 import ChecksPage from './components/ChecksPage'
 
 function App() {
