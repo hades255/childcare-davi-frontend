@@ -30,6 +30,18 @@ export async function uploadFile(file, kind) {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("document_type", kind);
+  return request("/upload", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export async function uploadFiles(files, kind) {
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append("files", file);
+  }
+  formData.append("document_type", kind);
   return request("/uploads", {
     method: "POST",
     body: formData,
@@ -67,6 +79,12 @@ export async function startCheck(body) {
 
 export async function getCheckProgress(checkId) {
   return request(`/checks/${encodeURIComponent(checkId)}`, {
+    method: "GET",
+  });
+}
+
+export async function getCheckIds() {
+  return request(`/checks`, {
     method: "GET",
   });
 }

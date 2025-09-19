@@ -1,9 +1,11 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   FileKind,
   uploadFile,
   startCheck,
   getCheckProgress,
+  uploadFiles,
+  getCheckIds,
 } from "../services/api";
 import { useChecks } from "../contexts/ChecksContext";
 import { formatDate } from "../helpers/date";
@@ -67,12 +69,53 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
     [kind, onAdded]
   );
 
+  const handlePickAndUploadFiles = useCallback(
+    async function handlePickAndUploadFiles() {
+      try {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept =
+          kind === FileKind.VGC_LIST
+            ? "application/json"
+            : "image/*,application/pdf";
+        input.multiple = true;
+        input.onchange = async () => {
+          if (input.files && input.files.length > 0) {
+            setIsUploading(true);
+            try {
+              const formData = new FormData();
+              for (const file of input.files) {
+                formData.append("files", file);
+              }
+              formData.append("document_type", kind);
+
+              const results = await uploadFiles(input.files, kind);
+
+              results.uploadedFiles.forEach((result) => onAdded(kind, result));
+            } finally {
+              setIsUploading(false);
+            }
+          }
+        };
+        input.click();
+      } catch (e) {
+        console.error(e);
+        alert(e.message || "Upload failed");
+      }
+    },
+    [kind, onAdded]
+  );
+
   return (
     <FileUploadCard
       className="min-w-[320px]"
       kind={kind}
       action={
-        <Button onClick={handlePickAndUpload} disabled={isUploading} size="sm">
+        <Button
+          onClick={handlePickAndUploadFiles}
+          disabled={isUploading}
+          size="sm"
+        >
           {isUploading ? "Uploading…" : `Upload ${title}`}
         </Button>
       }
@@ -132,6 +175,7 @@ export default function ChecksPage() {
   const [isStartingCheck, setIsStartingCheck] = useState(false);
   const [lastCheckId, setLastCheckId] = useState("");
   const [progressCheckId, setProgressCheckId] = useState("");
+  const [checkIds, setCheckIds] = useState([]);
   const [progressResult, setProgressResult] = useState(null);
 
   const validation = useMemo(() => {
@@ -191,13 +235,13 @@ export default function ChecksPage() {
 
     // Collect document keys from uploaded files relevant to selected modules
     const documentKeys = [
-      ...(fileMap[FileKind.STAFF_PLANNING] || []).map((f) => f.key),
-      ...(fileMap[FileKind.CHILD_PLANNING] || []).map((f) => f.key),
+      ...(fileMap[FileKind.STAFF_PLANNING] || []).map((f) => f.objectKey),
+      ...(fileMap[FileKind.CHILD_PLANNING] || []).map((f) => f.objectKey),
       ...(enableVgc
-        ? (fileMap[FileKind.VGC_LIST] || []).map((f) => f.key)
+        ? (fileMap[FileKind.VGC_LIST] || []).map((f) => f.objectKey)
         : []),
       ...(enableThreeHours
-        ? (fileMap[FileKind.CHILD_REGISTRATION] || []).map((f) => f.key)
+        ? (fileMap[FileKind.CHILD_REGISTRATION] || []).map((f) => f.objectKey)
         : []),
     ];
 
@@ -214,6 +258,7 @@ export default function ChecksPage() {
       const checkId = res.id || res.checkId || String(res);
       setLastCheckId(checkId);
       setProgressCheckId(checkId);
+      setCheckIds((prev) => [...prev, checkId]);
     } catch (e) {
       console.error(e);
       alert(e.message || "Failed to start check");
@@ -236,6 +281,19 @@ export default function ChecksPage() {
       alert(e.message || "Failed to get progress");
     }
   }
+
+  useEffect(() => {
+    async function getAllCheckIds() {
+      try {
+        const result = await getCheckIds();
+        setCheckIds(result);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getAllCheckIds();
+  }, []);
 
   return (
     <div className="flex flex-col gap-3 p-4 max-w-[980px] mx-auto">
@@ -294,12 +352,19 @@ export default function ChecksPage() {
       <div className="border-t border-gray-200 pt-3 flex flex-col gap-2">
         <strong>Check Progress</strong>
         <div className="flex gap-2 items-center flex-wrap">
-          <input
+          <select
             value={progressCheckId}
             onChange={(e) => setProgressCheckId(e.target.value)}
             placeholder="Enter check id"
-            className="px-2 py-1 border border-gray-300 rounded-md"
-          />
+            className="w-96 px-2 py-1 border border-gray-300 rounded-md"
+          >
+            <option value=""></option>
+            {checkIds.map((item, index) => (
+              <option key={index} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
           <Button
             onClick={handleGetProgress}
             variant="secondary"
