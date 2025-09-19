@@ -1,9 +1,12 @@
-import ChecksPage from './components/ChecksPage'
+import ChecksPage from "./components/ChecksPage";
+import { ChecksProvider } from "./contexts/ChecksContext";
 
 function App() {
   return (
-    <ChecksPage />
-  )
+    <ChecksProvider>
+      <ChecksPage />
+    </ChecksProvider>
+  );
 }
 
-export default App
+export default App;

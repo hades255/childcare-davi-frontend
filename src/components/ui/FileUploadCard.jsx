@@ -8,6 +8,7 @@ import {
 import { getKeyFromFileName } from "../../helpers/file";
 import Button from "./Button";
 import Icon from "./Icon";
+import { useChecks } from "../../contexts/ChecksContext";
 
 export default function FileUploadCard({
   kind,
@@ -106,6 +107,11 @@ function EditFileDialog({ kind, onClose }) {
 }
 
 function DocumentItem({ kind, doc }) {
+  const { fileMap, onAdded, onRemoved } = useChecks();
+
+  const files = fileMap[kind];
+  const fileKeys = files.map((item) => item.objectKey);
+
   const docKey = getKeyFromFileName(doc);
 
   const fileName = doc.split(/[/\\]/).pop().substr(9);
@@ -125,14 +131,23 @@ function DocumentItem({ kind, doc }) {
       alert(e.message || "Failed to get file status");
     }
   };
-  const handleRemove = async () => {
+  const handleDelete = async () => {
     await removeFile(docKey);
+    onRemoved(kind, docKey);
+  };
+  const handleAdd = async () => {
+    onAdded(kind, { objectKey: docKey, fileUrl: `/documents/${kind}/${doc}` });
+  };
+  const handleRemove = async () => {
     onRemoved(kind, docKey);
   };
 
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-gray-500 truncate max-w-[90%] shrink" title={doc}>
+      <span
+        className="text-gray-500 truncate max-w-[90%] shrink"
+        title={fileName}
+      >
         {fileName}
       </span>
       <div className="flex gap-2 shrink-0">
@@ -161,16 +176,26 @@ function DocumentItem({ kind, doc }) {
           variant="secondary"
           size="xs"
           icon="trash-2"
-          onClick={handleRemove}
+          onClick={handleDelete}
           title="Remove"
         />
-        <Button
-          variant="secondary"
-          size="xs"
-          icon="check"
-          onClick={handleRemove}
-          title="Add to check"
-        />
+        {fileKeys.includes(docKey) ? (
+          <Button
+            variant="secondary"
+            size="xs"
+            icon="x"
+            onClick={handleRemove}
+            title="Remvoe from check list"
+          />
+        ) : (
+          <Button
+            variant="secondary"
+            size="xs"
+            icon="check"
+            onClick={handleAdd}
+            title="Add to check list"
+          />
+        )}
       </div>
     </div>
   );

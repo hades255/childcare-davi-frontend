@@ -3,17 +3,14 @@ import FileUploadCard from "./ui/FileUploadCard";
 import Button from "./ui/Button";
 import Toggle from "./ui/Toggle";
 import FileItem from "./ui/FileItem";
-import Icon from "./ui/Icon";
 import {
   FileKind,
   uploadFile,
-  getFileStatus,
-  getFileDownloadUrl,
-  getFileViewUrl,
-  removeFile,
   startCheck,
   getCheckProgress,
 } from "../services/api";
+import { useChecks } from "../contexts/ChecksContext";
+import { formatDate } from "../helpers/date";
 
 const Checkbox = memo(function Checkbox({
   label,
@@ -33,13 +30,11 @@ const Checkbox = memo(function Checkbox({
   );
 });
 
-const UploadSection = memo(function UploadSection({
-  title,
-  kind,
-  files,
-  onUploaded,
-  onRemoved,
-}) {
+const UploadSection = memo(function UploadSection({ title, kind }) {
+  const { fileMap, onAdded } = useChecks();
+
+  const files = fileMap[kind];
+
   const [isUploading, setIsUploading] = useState(false);
 
   const handlePickAndUpload = useCallback(
@@ -56,7 +51,7 @@ const UploadSection = memo(function UploadSection({
             setIsUploading(true);
             try {
               const result = await uploadFile(input.files[0], kind);
-              onUploaded(kind, result);
+              onAdded(kind, result);
             } finally {
               setIsUploading(false);
             }
@@ -68,22 +63,8 @@ const UploadSection = memo(function UploadSection({
         alert(e.message || "Upload failed");
       }
     },
-    [kind, onUploaded]
+    [kind, onAdded]
   );
-
-  async function handleCheckStatus(fileKey) {
-    try {
-      const res = await getFileStatus(fileKey);
-      alert(typeof res === "string" ? res : JSON.stringify(res, null, 2));
-    } catch (e) {
-      console.error(e);
-      alert(e.message || "Failed to get file status");
-    }
-  }
-
-  function getFileName(filePath) {
-    return filePath.split(/[/\\]/).pop().substr(9);
-  }
 
   return (
     <FileUploadCard
@@ -100,41 +81,45 @@ const UploadSection = memo(function UploadSection({
           <span className="text-gray-500">No files uploaded yet.</span>
         )}
         {files.map((f) => (
-          <FileItem
-            key={f.key}
-            file={{ key: f.key, path: getFileName(f.path || "") }}
-            onView={() => window.open(getFileViewUrl(f.key), "_blank")}
-            onDownload={() => window.open(getFileDownloadUrl(f.path), "_blank")}
-            onStatus={() => handleCheckStatus(f.key)}
-            onRemove={async () => {
-              await removeFile(f.key);
-              onRemoved(kind, f.key);
-            }}
-          />
+          <FileItem key={f.objectKey} kind={kind} file={f} />
         ))}
       </div>
     </FileUploadCard>
   );
 });
 
+const DateInput = memo(function DateInput({ date, onChange }) {
+  const handleChange = (e) => {
+    onChange(e.target.value);
+  };
+
+  return (
+    <div className="flex flex-col">
+      <input
+        type="date"
+        id="dateInput"
+        value={date}
+        onChange={handleChange}
+        className="border-b border-gray-300 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
+      />
+    </div>
+  );
+});
+
 const uploadSectionItems = [
   { title: "Staff-Planning", kind: FileKind.STAFF_PLANNING },
   { title: "Child-Planning", kind: FileKind.CHILD_PLANNING },
-  { title: "VGC List (JSON)", kind: FileKind.CHILD_REGISTRATION },
-  { title: "Child-Registration", kind: FileKind.VGC_LIST },
+  { title: "Child-Registration", kind: FileKind.CHILD_REGISTRATION },
+  { title: "VGC List (JSON)", kind: FileKind.VGC_LIST },
 ];
 
 export default function ChecksPage() {
+  const { fileMap } = useChecks();
+
   const [enableBkr, setEnableBkr] = useState(true);
   const [enableVgc, setEnableVgc] = useState(false);
   const [enableThreeHours, setEnableThreeHours] = useState(false);
-
-  const [fileMap, setFileMap] = useState({
-    [FileKind.STAFF_PLANNING]: [],
-    [FileKind.CHILD_PLANNING]: [],
-    [FileKind.CHILD_REGISTRATION]: [],
-    [FileKind.VGC_LIST]: [],
-  });
+  const [checkDate, setCheckDate] = useState("");
 
   const requiredVisibleKinds = useMemo(() => {
     const kinds = new Set([FileKind.STAFF_PLANNING, FileKind.CHILD_PLANNING]);
@@ -142,48 +127,6 @@ export default function ChecksPage() {
     if (enableThreeHours) kinds.add(FileKind.CHILD_REGISTRATION);
     return Array.from(kinds);
   }, [enableVgc, enableThreeHours]);
-
-  const handleUploaded = useCallback(function handleUploaded(kind, res) {
-    const item = {
-      key: res.objectKey,
-      path: res.fileUrl,
-      status: true,
-    };
-    setFileMap((prev) => {
-      const existing = prev[kind] || [];
-      // Avoid duplicates by key
-      if (existing.some((x) => x.key === item.key)) return prev;
-      return {
-        ...prev,
-        [kind]: [...existing, item],
-      };
-    });
-  }, []);
-
-  const handleRemoved = useCallback(function handleRemoved(kind, key) {
-    setFileMap((prev) => ({
-      ...prev,
-      [kind]: (prev[kind] || []).filter((f) => f.key !== key),
-    }));
-  }, []);
-
-  const handleSubAdd = useCallback(function handleSubAdd(kind, key, filename) {
-    setFileMap((prev) => {
-      const existing = prev[kind] || [];
-      // Avoid duplicates by key
-      if (existing.some((x) => x.key === key)) return prev;
-      return {
-        ...prev,
-        [kind]: [
-          ...existing,
-          {
-            key,
-            path: `/documents/${kind}/${filename}`,
-          },
-        ],
-      };
-    });
-  });
 
   const [isStartingCheck, setIsStartingCheck] = useState(false);
   const [lastCheckId, setLastCheckId] = useState("");
@@ -216,9 +159,17 @@ export default function ChecksPage() {
     };
   }, [fileMap, enableVgc, enableThreeHours]);
 
+  const handleDateChange = useCallback(function handleDateChange(value) {
+    setCheckDate(value);
+  });
+
   async function handleStartCheck() {
     if (!validation.canStart) {
       alert(`Missing required documents: ${validation.missing.join(", ")}`);
+      return;
+    }
+    if (!checkDate) {
+      alert(`Input date`);
       return;
     }
     const modules = [];
@@ -252,7 +203,7 @@ export default function ChecksPage() {
     ];
 
     const source = "flexkids";
-    const date = new Date().toISOString().slice(0, 10);
+    const date = formatDate(checkDate);
     try {
       setIsStartingCheck(true);
       const res = await startCheck({
@@ -315,19 +266,13 @@ export default function ChecksPage() {
         {uploadSectionItems.map(
           (item, index) =>
             requiredVisibleKinds.includes(item.kind) && (
-              <UploadSection
-                key={index}
-                title={item.title}
-                kind={item.kind}
-                files={fileMap[item.kind]}
-                onUploaded={handleUploaded}
-                onRemoved={handleRemoved}
-              />
+              <UploadSection key={index} title={item.title} kind={item.kind} />
             )
         )}
       </div>
 
       <div className="flex gap-2 items-center">
+        <DateInput date={checkDate} onChange={handleDateChange} />
         <Button
           onClick={handleStartCheck}
           disabled={!validation.canStart || isStartingCheck}

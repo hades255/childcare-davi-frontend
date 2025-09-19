@@ -26,9 +26,9 @@ export default function Button({
   const cls = `${base} ${sizes[size] ?? sizes.md} ${
     variants[variant] ?? variants.primary
   } ${className}`;
-  
+
   const iconSize = size === "sm" ? 14 : size === "lg" ? 18 : 16;
-  
+
   return (
     <button className={cls} {...props}>
       {icon && iconPosition === "left" && <Icon name={icon} size={iconSize} />}

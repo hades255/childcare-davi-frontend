@@ -1,4 +1,10 @@
-export default function Toggle({ label, checked, onChange, disabled, readOnly }) {
+export default function Toggle({
+  label,
+  checked,
+  onChange,
+  disabled,
+  readOnly,
+}) {
   return (
     <label className="inline-flex items-center gap-2 cursor-pointer select-none">
       <span className="text-sm text-gray-800">{label}</span>
