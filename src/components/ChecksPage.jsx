@@ -1,8 +1,4 @@
 import { memo, useCallback, useMemo, useState } from "react";
-import FileUploadCard from "./ui/FileUploadCard";
-import Button from "./ui/Button";
-import Toggle from "./ui/Toggle";
-import FileItem from "./ui/FileItem";
 import {
   FileKind,
   uploadFile,
@@ -12,6 +8,10 @@ import {
 import { useChecks } from "../contexts/ChecksContext";
 import { formatDate } from "../helpers/date";
 import CheckResults from "./ui/CheckResults";
+import FileUploadCard from "./ui/FileUploadCard";
+import Button from "./ui/Button";
+import Toggle from "./ui/Toggle";
+import FileItem from "./ui/FileItem";
 
 const Checkbox = memo(function Checkbox({
   label,
@@ -77,7 +77,7 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
         </Button>
       }
     >
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-wrap gap-2">
         {files.length === 0 && (
           <span className="text-gray-500">No files uploaded yet.</span>
         )}
@@ -308,15 +308,8 @@ export default function ChecksPage() {
             Get Progress
           </Button>
         </div>
-        {progressResult && (
-          <pre className="bg-gray-50 border border-gray-200 p-3 rounded-md max-h-80 overflow-auto">
-            {typeof progressResult === "string"
-              ? progressResult
-              : JSON.stringify(progressResult, null, 2)}
-          </pre>
-        )}
 
-        <CheckResults />
+        <CheckResults data={progressResult} />
       </div>
     </div>
   );

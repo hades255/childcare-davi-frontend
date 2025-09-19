@@ -1,9 +1,6 @@
+import ModalImage from "react-modal-image";
 import { useChecks } from "../../contexts/ChecksContext";
-import {
-  getFileDownloadUrl,
-  getFileStatus,
-  getFileViewUrl,
-} from "../../services/api";
+import { getFileDownloadUrl, getFileStatus } from "../../services/api";
 import Button from "./Button";
 
 export default function FileItem({ kind, file }) {
@@ -11,9 +8,8 @@ export default function FileItem({ kind, file }) {
 
   const fileName = file.fileUrl.split(/[/\\]/).pop().substr(9);
 
-  function handleView() {
-    window.open(getFileViewUrl(file.objectKey), "_blank");
-  }
+  const filePath = getFileDownloadUrl(file.fileUrl);
+
   function handleDownload() {
     window.open(getFileDownloadUrl(file.fileUrl), "_blank");
   }
@@ -30,25 +26,27 @@ export default function FileItem({ kind, file }) {
     await removeFile(file.objectKey);
     onRemoved(kind, file.objectKey);
   }
+  const handleRemove = async () => {
+    onRemoved(kind, file.objectKey);
+  };
 
   return (
-    <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
-        <span
-          className="text-gray-500 truncate max-w-[60%] shrink"
-          title={fileName}
-        >
-          {fileName}
-        </span>
-      </div>
+    <div className="border rounded p-1 flex flex-col items-center justify-between gap-2">
+      <span
+        className="text-gray-500 truncate max-w-40 text-sm shrink"
+        title={fileName}
+      >
+        {fileName}
+      </span>
+      {[".png", ".jpg"].includes(fileName.substr(fileName.length - 4)) && (
+        <ModalImage
+          small={filePath}
+          large={filePath}
+          alt={fileName}
+          className="h-24"
+        />
+      )}
       <div className="flex gap-1 shrink-0">
-        <Button
-          variant="ghost"
-          size="xs"
-          icon="eye"
-          onClick={handleView}
-          title="View"
-        ></Button>
         <Button
           variant="ghost"
           size="xs"
@@ -63,13 +61,21 @@ export default function FileItem({ kind, file }) {
           onClick={handleCheckStatus}
           title="Status"
         ></Button>
-        <Button
+        {/* <Button
           variant="secondary"
           size="xs"
           icon="trash-2"
           onClick={handleDelete}
           title="Remove"
-        ></Button>
+        ></Button> */}
+        <Button
+          variant="secondary"
+          size="xs"
+          icon="x"
+          onClick={handleRemove}
+          title="Remvoe from check list"
+          className="bg-yellow-300 text-blue-900 px-4"
+        />
       </div>
     </div>
   );

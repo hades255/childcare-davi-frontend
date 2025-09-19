@@ -1,8 +1,8 @@
 import React from "react";
 import { checkResult } from "../../mockdata";
 
-const CheckResults = () => {
-  const data = checkResult;
+const CheckResults = ({ data }) => {
+  // const data = checkResult;
 
   if (
     !data ||
@@ -42,24 +42,22 @@ const CheckResults = () => {
         Check Results for {resultData.day}
       </h2>
 
-      <div className="overflow-x-auto max-h-[60vh] overflow-y-scroll">
+      <div className="overflow-x-auto max-h-[60vh] overflow-y-scroll border">
         <table className="min-w-full border border-gray-300 rounded">
           <thead className="bg-gray-100">
             <tr>
               <th className="border border-gray-300 px-3 py-2 text-left">
-                From Time
+                From
               </th>
-              <th className="border border-gray-300 px-3 py-2 text-left">
-                To Time
-              </th>
+              <th className="border border-gray-300 px-3 py-2 text-left">To</th>
               <th className="border border-gray-300 px-3 py-2 text-center">
-                # Children
+                Children
               </th>
               <th className="border border-gray-300 px-3 py-2 text-center">
                 Required Staff
               </th>
               <th className="border border-gray-300 px-3 py-2 text-center">
-                # Staff
+                Staff
               </th>
               <th className="border border-gray-300 px-3 py-2 text-center">
                 BKR

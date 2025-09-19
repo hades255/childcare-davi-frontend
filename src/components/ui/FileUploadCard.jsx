@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import ModalImage from "react-modal-image";
+import clsx from "clsx";
 import {
   FileKind,
   getFileDownloadUrl,
@@ -6,9 +8,9 @@ import {
   getModuleDocuments,
 } from "../../services/api";
 import { getKeyFromFileName } from "../../helpers/file";
+import { useChecks } from "../../contexts/ChecksContext";
 import Button from "./Button";
 import Icon from "./Icon";
-import { useChecks } from "../../contexts/ChecksContext";
 
 export default function FileUploadCard({
   kind,
@@ -51,6 +53,8 @@ export default function FileUploadCard({
 
 function EditFileDialog({ kind, onClose }) {
   const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(null);
 
   useEffect(() => {
     async function fetchDocuments() {
@@ -64,6 +68,8 @@ function EditFileDialog({ kind, onClose }) {
         if (error.name !== "AbortError") {
           console.log(error);
         }
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -73,8 +79,14 @@ function EditFileDialog({ kind, onClose }) {
   }, [kind]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-lg p-6 w-full max-w-lg mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Edit File</h3>
           <button
@@ -84,29 +96,29 @@ function EditFileDialog({ kind, onClose }) {
             <Icon name="x" size={20} />
           </button>
         </div>
-        <div className="space-y-4 h-[40vh] overflow-y-scroll">
-          {documents && documents.length > 0 ? (
+        <div className="max-h-[60vh] overflow-y-scroll flex flex-wrap gap-2">
+          {loading ? (
+            "Loading..."
+          ) : documents && documents.length > 0 ? (
             documents.map((item) => (
-              <DocumentItem key={item} kind={kind} doc={item} />
+              <DocumentItem
+                key={item}
+                kind={kind}
+                doc={item}
+                onClick={(docKey) => setActiveIndex(docKey)}
+                active={activeIndex}
+              />
             ))
           ) : (
             <p>No documentations</p>
           )}
-        </div>
-        <div className="flex justify-end gap-2 mt-6">
-          <Button onClick={onClose} variant="secondary" icon="x">
-            Cancel
-          </Button>
-          <Button onClick={onClose} variant="primary" icon="save">
-            Save Changes
-          </Button>
         </div>
       </div>
     </div>
   );
 }
 
-function DocumentItem({ kind, doc }) {
+function DocumentItem({ kind, doc, onClick, active }) {
   const { fileMap, onAdded, onRemoved } = useChecks();
 
   const files = fileMap[kind];
@@ -116,11 +128,10 @@ function DocumentItem({ kind, doc }) {
 
   const fileName = doc.split(/[/\\]/).pop().substr(9);
 
-  const handleView = () => {
-    window.open(getFileViewUrl(docKey), "_blank");
-  };
+  const filePath = getFileDownloadUrl(`/documents/${kind}/${doc}`);
+
   const handleDownload = () => {
-    window.open(getFileDownloadUrl(`/documents/${kind}/${doc}`), "_blank");
+    window.open(filePath, "_blank");
   };
   const handleCheckStatus = async () => {
     try {
@@ -141,23 +152,33 @@ function DocumentItem({ kind, doc }) {
   const handleRemove = async () => {
     onRemoved(kind, docKey);
   };
+  const handleClick = () => {
+    onClick(docKey);
+  };
 
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div
+      className={clsx(
+        "border rounded p-1 flex flex-col items-center justify-between gap-2",
+        { "border-blue-500 bg-gray-200": active === docKey }
+      )}
+      onClick={handleClick}
+    >
       <span
-        className="text-gray-500 truncate max-w-[90%] shrink"
+        className="text-gray-500 max-w-40 text-sm truncate shrink"
         title={fileName}
       >
         {fileName}
       </span>
-      <div className="flex gap-2 shrink-0">
-        <Button
-          variant="ghost"
-          size="xs"
-          icon="eye"
-          onClick={handleView}
-          title="View"
+      {[".png", ".jpg"].includes(fileName.substr(fileName.length - 4)) && (
+        <ModalImage
+          small={filePath}
+          large={filePath}
+          alt={fileName}
+          className="h-24"
         />
+      )}
+      <div className="flex gap-2 shrink-0">
         <Button
           variant="ghost"
           size="xs"
@@ -172,13 +193,13 @@ function DocumentItem({ kind, doc }) {
           onClick={handleCheckStatus}
           title="Status"
         />
-        <Button
+        {/* <Button
           variant="secondary"
           size="xs"
           icon="trash-2"
           onClick={handleDelete}
           title="Remove"
-        />
+        /> */}
         {fileKeys.includes(docKey) ? (
           <Button
             variant="secondary"
@@ -186,6 +207,7 @@ function DocumentItem({ kind, doc }) {
             icon="x"
             onClick={handleRemove}
             title="Remvoe from check list"
+            className="bg-yellow-300 text-blue-900 px-4"
           />
         ) : (
           <Button
@@ -194,6 +216,7 @@ function DocumentItem({ kind, doc }) {
             icon="check"
             onClick={handleAdd}
             title="Add to check list"
+            className="bg-blue-300 text-yellow-200 hover:text-yellow-600 px-4"
           />
         )}
       </div>
