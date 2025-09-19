@@ -11,6 +11,7 @@ import {
 } from "../services/api";
 import { useChecks } from "../contexts/ChecksContext";
 import { formatDate } from "../helpers/date";
+import CheckResults from "./ui/CheckResults";
 
 const Checkbox = memo(function Checkbox({
   label,
@@ -144,6 +145,7 @@ export default function ChecksPage() {
     if (!hasChildPlan) missing.push("child-planning");
     if (enableVgc && !hasVgc) missing.push("vgc_list");
     if (enableThreeHours && !hasReg) missing.push("child-registration");
+    if (!checkDate) missing.push("Checking date");
 
     return {
       hasStaff,
@@ -155,9 +157,10 @@ export default function ChecksPage() {
         hasStaff &&
         hasChildPlan &&
         (!enableVgc || hasVgc) &&
-        (!enableThreeHours || hasReg),
+        (!enableThreeHours || hasReg) &&
+        checkDate,
     };
-  }, [fileMap, enableVgc, enableThreeHours]);
+  }, [fileMap, enableVgc, enableThreeHours, checkDate]);
 
   const handleDateChange = useCallback(function handleDateChange(value) {
     setCheckDate(value);
@@ -166,10 +169,6 @@ export default function ChecksPage() {
   async function handleStartCheck() {
     if (!validation.canStart) {
       alert(`Missing required documents: ${validation.missing.join(", ")}`);
-      return;
-    }
-    if (!checkDate) {
-      alert(`Input date`);
       return;
     }
     const modules = [];
@@ -316,6 +315,8 @@ export default function ChecksPage() {
               : JSON.stringify(progressResult, null, 2)}
           </pre>
         )}
+
+        <CheckResults />
       </div>
     </div>
   );
