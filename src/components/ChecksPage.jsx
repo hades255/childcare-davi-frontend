@@ -34,7 +34,7 @@ const Checkbox = memo(function Checkbox({
 });
 
 const UploadSection = memo(function UploadSection({ title, kind, format }) {
-  const { fileMap, onAdded } = useChecks();
+  const { fileMap, onAdded, onRemoved } = useChecks();
 
   const file = fileMap[kind];
 
@@ -69,20 +69,47 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
     [kind, onAdded]
   );
 
+  async function handleDelete() {
+    // await removeFile(file.objectKey);
+    onRemoved(kind, file.objectKey);
+  }
+
   return (
     <FileUploadCard
       className="min-w-[320px]"
       kind={kind}
       format={format && file && isFormatNeedFile(file.fileUrl)}
       action={
-        <Button onClick={handlePickAndUpload} disabled={isUploading} size="sm">
-          {isUploading ? "Uploading…" : `Upload ${title}`}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handlePickAndUpload}
+            disabled={isUploading}
+            size="sm"
+            variant="success"
+          >
+            {isUploading
+              ? "Uploading…"
+              : file
+              ? file.fileUrl.split(/[/\\]/).pop().substr(9)
+              : `Upload ${title}`}
+          </Button>
+          {file && (
+            <Button
+              onClick={handleDelete}
+              icon={"x"}
+              variant="danger"
+              size="xs"
+              className="!rounded-full"
+            />
+          )}
+        </div>
       }
     >
-      <div className="flex flex-wrap gap-2">
-        {file && <FileItem key={file.objectKey} kind={kind} file={file} />}
-      </div>
+      {false && (
+        <div className="flex flex-wrap gap-2">
+          {file && <FileItem key={file.objectKey} kind={kind} file={file} />}
+        </div>
+      )}
     </FileUploadCard>
   );
 });
@@ -106,13 +133,13 @@ const DateInput = memo(function DateInput({ date, onChange }) {
 });
 
 const uploadSectionItems = [
-  { title: "Staff-Planning", kind: FileKind.STAFF_PLANNING, format: true },
   { title: "Child-Planning", kind: FileKind.CHILD_PLANNING, format: true },
   {
     title: "Child-Registration",
     kind: FileKind.CHILD_REGISTRATION,
     format: true,
   },
+  { title: "Staff-Planning", kind: FileKind.STAFF_PLANNING, format: true },
   { title: "VGC List (JSON)", kind: FileKind.VGC_LIST },
 ];
 

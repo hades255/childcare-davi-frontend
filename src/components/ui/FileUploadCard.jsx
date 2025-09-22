@@ -45,21 +45,27 @@ export default function FileUploadCard({
     >
       <div className="flex items-center justify-between mb-3">
         {action}
-        <div className="flex items-center gap-2">
-          {format && (
+        {false && (
+          <div className="flex items-center gap-2">
+            {format && (
+              <Button
+                onClick={handleClickFormatModalOpenButton}
+                icon={"edit"}
+                size="sm"
+                variant="o-primary"
+              >
+                Edit format
+              </Button>
+            )}
             <Button
-              onClick={handleClickFormatModalOpenButton}
-              icon={"edit"}
+              onClick={handleClickOpenButton}
               size="sm"
               variant="o-primary"
             >
-              Edit format
+              View uploaded files
             </Button>
-          )}
-          <Button onClick={handleClickOpenButton} size="sm" variant="o-primary">
-            View uploaded files
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
 
       {children}
