@@ -11,14 +11,17 @@ import { getKeyFromFileName } from "../../helpers/file";
 import { useChecks } from "../../contexts/ChecksContext";
 import Button from "./Button";
 import Icon from "./Icon";
+import FileFormatModal from "./FileFormatModal";
 
 export default function FileUploadCard({
   kind,
+  format,
   action,
   children,
   className = "",
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenFormatModal, setIsOpenFormatModal] = useState(false);
 
   const handleClickOpenButton = useCallback(() => {
     setIsOpen(true);
@@ -28,25 +31,49 @@ export default function FileUploadCard({
     setIsOpen(false);
   }, []);
 
+  const handleClickFormatModalOpenButton = useCallback(() => {
+    setIsOpenFormatModal(true);
+  }, []);
+
+  const handleFormatModalCloseDialog = useCallback(() => {
+    setIsOpenFormatModal(false);
+  }, []);
+
   return (
     <div
       className={`mt-3 border border-gray-200 rounded-lg p-4 bg-white shadow-sm ${className}`}
     >
       <div className="flex items-center justify-between mb-3">
         {action}
-        <Button
-          onClick={handleClickOpenButton}
-          icon="edit"
-          size="sm"
-          variant="primary"
-        >
-          Edit
-        </Button>
+        {false && (
+          <div className="flex items-center gap-2">
+            {format && (
+              <Button
+                onClick={handleClickFormatModalOpenButton}
+                icon={"edit"}
+                size="sm"
+                variant="o-primary"
+              >
+                Edit format
+              </Button>
+            )}
+            <Button
+              onClick={handleClickOpenButton}
+              size="sm"
+              variant="o-primary"
+            >
+              View uploaded files
+            </Button>
+          </div>
+        )}
       </div>
 
       {children}
 
       {isOpen && <EditFileDialog kind={kind} onClose={handleCloseDialog} />}
+      {isOpenFormatModal && (
+        <FileFormatModal kind={kind} onClose={handleFormatModalCloseDialog} />
+      )}
     </div>
   );
 }
@@ -121,8 +148,8 @@ function EditFileDialog({ kind, onClose }) {
 function DocumentItem({ kind, doc, onClick, active }) {
   const { fileMap, onAdded, onRemoved } = useChecks();
 
-  const files = fileMap[kind];
-  const fileKeys = files.map((item) => item.objectKey);
+  const file = fileMap[kind];
+  const fileKey = file?.objectKey;
 
   const docKey = getKeyFromFileName(doc);
 
@@ -200,7 +227,7 @@ function DocumentItem({ kind, doc, onClick, active }) {
           onClick={handleDelete}
           title="Remove"
         /> */}
-        {fileKeys.includes(docKey) ? (
+        {fileKey === docKey ? (
           <Button
             variant="secondary"
             size="xs"

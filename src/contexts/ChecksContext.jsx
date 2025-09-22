@@ -5,28 +5,24 @@ const ChecksContext = createContext(null);
 
 export const ChecksProvider = ({ children }) => {
   const [fileMap, setFileMap] = useState({
-    [FileKind.STAFF_PLANNING]: [],
-    [FileKind.CHILD_PLANNING]: [],
-    [FileKind.CHILD_REGISTRATION]: [],
-    [FileKind.VGC_LIST]: [],
+    [FileKind.STAFF_PLANNING]: null,
+    [FileKind.CHILD_PLANNING]: null,
+    [FileKind.CHILD_REGISTRATION]: null,
+    [FileKind.VGC_LIST]: null,
   });
 
-  const handleRemoved = useCallback(function handleRemoved(kind, key) {
+  const handleRemoved = useCallback(function handleRemoved(kind) {
     setFileMap((prev) => ({
       ...prev,
-      [kind]: (prev[kind] || []).filter((f) => f.objectKey !== key),
+      [kind]: null,
     }));
   }, []);
 
   const handleAdded = useCallback(function handleAdded(kind, item) {
-    setFileMap((prev) => {
-      const existing = prev[kind] || [];
-      if (existing.some((x) => x.objectKey === item.objectKey)) return prev;
-      return {
-        ...prev,
-        [kind]: [...existing, item],
-      };
-    });
+    setFileMap((prev) => ({
+      ...prev,
+      [kind]: item,
+    }));
   });
 
   return (

@@ -54,6 +54,15 @@ export async function getFileStatus(fileKey) {
   });
 }
 
+export async function getFirstImageOfDoc(doc_key) {
+  return request(
+    `/documents/first-image?doc_key=${encodeURIComponent(doc_key)}`,
+    {
+      method: "GET",
+    }
+  );
+}
+
 export function getFileDownloadUrl(filePath) {
   return `${API_BASE_URL}${filePath}`;
 }
