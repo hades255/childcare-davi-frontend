@@ -4,7 +4,6 @@ import {
   uploadFile,
   startCheck,
   getCheckProgress,
-  uploadFiles,
   getCheckIds,
 } from "../services/api";
 import { useChecks } from "../contexts/ChecksContext";
@@ -14,6 +13,7 @@ import FileUploadCard from "./ui/FileUploadCard";
 import Button from "./ui/Button";
 import Toggle from "./ui/Toggle";
 import FileItem from "./ui/FileItem";
+import { isFormatNeedFile } from "../helpers/file";
 
 const Checkbox = memo(function Checkbox({
   label,
@@ -33,10 +33,10 @@ const Checkbox = memo(function Checkbox({
   );
 });
 
-const UploadSection = memo(function UploadSection({ title, kind }) {
+const UploadSection = memo(function UploadSection({ title, kind, format }) {
   const { fileMap, onAdded } = useChecks();
 
-  const files = fileMap[kind];
+  const file = fileMap[kind];
 
   const [isUploading, setIsUploading] = useState(false);
 
@@ -48,7 +48,7 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
         input.accept =
           kind === FileKind.VGC_LIST
             ? "application/json"
-            : "image/*,application/pdf";
+            : "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.doc,.docx";
         input.onchange = async () => {
           if (input.files && input.files[0]) {
             setIsUploading(true);
@@ -69,64 +69,19 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
     [kind, onAdded]
   );
 
-  const handlePickAndUploadFiles = useCallback(
-    async function handlePickAndUploadFiles() {
-      try {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept =
-          kind === FileKind.VGC_LIST
-            ? "application/json"
-            : "image/*,application/pdf";
-        input.multiple = true;
-        input.onchange = async () => {
-          if (input.files && input.files.length > 0) {
-            setIsUploading(true);
-            try {
-              const formData = new FormData();
-              for (const file of input.files) {
-                formData.append("files", file);
-              }
-              formData.append("document_type", kind);
-
-              const results = await uploadFiles(input.files, kind);
-
-              results.uploadedFiles.forEach((result) => onAdded(kind, result));
-            } finally {
-              setIsUploading(false);
-            }
-          }
-        };
-        input.click();
-      } catch (e) {
-        console.error(e);
-        alert(e.message || "Upload failed");
-      }
-    },
-    [kind, onAdded]
-  );
-
   return (
     <FileUploadCard
       className="min-w-[320px]"
       kind={kind}
+      format={format && file && isFormatNeedFile(file.fileUrl)}
       action={
-        <Button
-          onClick={handlePickAndUploadFiles}
-          disabled={isUploading}
-          size="sm"
-        >
+        <Button onClick={handlePickAndUpload} disabled={isUploading} size="sm">
           {isUploading ? "Uploading…" : `Upload ${title}`}
         </Button>
       }
     >
       <div className="flex flex-wrap gap-2">
-        {files.length === 0 && (
-          <span className="text-gray-500">No files uploaded yet.</span>
-        )}
-        {files.map((f) => (
-          <FileItem key={f.objectKey} kind={kind} file={f} />
-        ))}
+        {file && <FileItem key={file.objectKey} kind={kind} file={file} />}
       </div>
     </FileUploadCard>
   );
@@ -151,9 +106,13 @@ const DateInput = memo(function DateInput({ date, onChange }) {
 });
 
 const uploadSectionItems = [
-  { title: "Staff-Planning", kind: FileKind.STAFF_PLANNING },
-  { title: "Child-Planning", kind: FileKind.CHILD_PLANNING },
-  { title: "Child-Registration", kind: FileKind.CHILD_REGISTRATION },
+  { title: "Staff-Planning", kind: FileKind.STAFF_PLANNING, format: true },
+  { title: "Child-Planning", kind: FileKind.CHILD_PLANNING, format: true },
+  {
+    title: "Child-Registration",
+    kind: FileKind.CHILD_REGISTRATION,
+    format: true,
+  },
   { title: "VGC List (JSON)", kind: FileKind.VGC_LIST },
 ];
 
@@ -179,10 +138,10 @@ export default function ChecksPage() {
   const [progressResult, setProgressResult] = useState(null);
 
   const validation = useMemo(() => {
-    const hasStaff = (fileMap[FileKind.STAFF_PLANNING]?.length || 0) > 0;
-    const hasChildPlan = (fileMap[FileKind.CHILD_PLANNING]?.length || 0) > 0;
-    const hasVgc = (fileMap[FileKind.VGC_LIST]?.length || 0) > 0;
-    const hasReg = (fileMap[FileKind.CHILD_REGISTRATION]?.length || 0) > 0;
+    const hasStaff = fileMap[FileKind.STAFF_PLANNING];
+    const hasChildPlan = fileMap[FileKind.CHILD_PLANNING];
+    const hasVgc = fileMap[FileKind.VGC_LIST];
+    const hasReg = fileMap[FileKind.CHILD_REGISTRATION];
 
     const missing = [];
     if (!hasStaff) missing.push("staff-planning");
@@ -221,28 +180,21 @@ export default function ChecksPage() {
     if (enableThreeHours) modules.push("three_hours");
 
     // Additional validation per selected module
-    if (enableVgc && (fileMap[FileKind.VGC_LIST]?.length || 0) === 0) {
+    if (enableVgc && !fileMap[FileKind.VGC_LIST]) {
       alert("Please upload VGC list (JSON) to run VGC.");
       return;
     }
-    if (
-      enableThreeHours &&
-      (fileMap[FileKind.CHILD_REGISTRATION]?.length || 0) === 0
-    ) {
+    if (enableThreeHours && !fileMap[FileKind.CHILD_REGISTRATION]) {
       alert("Please upload child-registration to run 3-UURs.");
       return;
     }
 
     // Collect document keys from uploaded files relevant to selected modules
     const documentKeys = [
-      ...(fileMap[FileKind.STAFF_PLANNING] || []).map((f) => f.objectKey),
-      ...(fileMap[FileKind.CHILD_PLANNING] || []).map((f) => f.objectKey),
-      ...(enableVgc
-        ? (fileMap[FileKind.VGC_LIST] || []).map((f) => f.objectKey)
-        : []),
-      ...(enableThreeHours
-        ? (fileMap[FileKind.CHILD_REGISTRATION] || []).map((f) => f.objectKey)
-        : []),
+      fileMap[FileKind.STAFF_PLANNING],
+      fileMap[FileKind.CHILD_PLANNING],
+      fileMap[FileKind.VGC_LIST],
+      fileMap[FileKind.CHILD_REGISTRATION],
     ];
 
     const source = "flexkids";
@@ -323,7 +275,7 @@ export default function ChecksPage() {
         {uploadSectionItems.map(
           (item, index) =>
             requiredVisibleKinds.includes(item.kind) && (
-              <UploadSection key={index} title={item.title} kind={item.kind} />
+              <UploadSection key={index} {...item} />
             )
         )}
       </div>
