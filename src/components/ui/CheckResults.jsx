@@ -3,7 +3,7 @@ import React from "react";
 
 const CheckResults = ({ data }) => {
 // const CheckResults = () => {
-  const data = checkResult;
+  // const data = checkResult;
 
   if (
     !data ||
