@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Icon from "./Icon";
+import clsx from "clsx";
 import { useChecks } from "../../contexts/ChecksContext";
 import { getFirstImageOfDoc } from "../../services/api";
-import clsx from "clsx";
+import Icon from "./Icon";
 
 const ROI_KEYS = ["week", "main", "time"];
 

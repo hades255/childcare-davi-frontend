@@ -8,12 +8,12 @@ import {
 } from "../services/api";
 import { useChecks } from "../contexts/ChecksContext";
 import { formatDate } from "../helpers/date";
+import { isFormatNeedFile } from "../helpers/file";
 import CheckResults from "./ui/CheckResults";
 import FileUploadCard from "./ui/FileUploadCard";
 import Button from "./ui/Button";
 import Toggle from "./ui/Toggle";
 import FileItem from "./ui/FileItem";
-import { isFormatNeedFile } from "../helpers/file";
 
 const Checkbox = memo(function Checkbox({
   label,
