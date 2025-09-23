@@ -252,7 +252,6 @@ export default function ChecksPage() {
       return;
     }
     try {
-      setProgressResult("Loading…");
       const res = await getCheckProgress(progressCheckId);
       setProgressResult(res);
     } catch (e) {
@@ -353,7 +352,8 @@ export default function ChecksPage() {
           </Button>
         </div>
 
-        <CheckResults data={progressResult} />
+        {progressResult && <CheckResults data={progressResult} />}
+        {/* <CheckResults /> */}
       </div>
     </div>
   );
