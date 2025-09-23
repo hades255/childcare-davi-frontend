@@ -84,11 +84,11 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
           <Button
             onClick={handlePickAndUpload}
             disabled={isUploading}
-            size="sm"
+            size="lg"
             variant="success"
           >
             {isUploading
-              ? "Uploading…"
+              ? "uploaden..."
               : file
               ? file.fileUrl.split(/[/\\]/).pop().substr(9)
               : `Upload ${title}`}
@@ -133,13 +133,13 @@ const DateInput = memo(function DateInput({ date, onChange }) {
 });
 
 const uploadSectionItems = [
-  { title: "Child-Planning", kind: FileKind.CHILD_PLANNING, format: true },
+  { title: "Upload kindplanning", kind: FileKind.CHILD_PLANNING, format: true },
   {
-    title: "Child-Registration",
+    title: "Upload kindregistratie",
     kind: FileKind.CHILD_REGISTRATION,
     format: true,
   },
-  { title: "Staff-Planning", kind: FileKind.STAFF_PLANNING, format: true },
+  { title: "Upload personeelsplanning", kind: FileKind.STAFF_PLANNING, format: true },
   { title: "VGC List (JSON)", kind: FileKind.VGC_LIST },
 ];
 
@@ -275,29 +275,32 @@ export default function ChecksPage() {
 
   return (
     <div className="flex flex-col gap-3 p-4 max-w-[980px] mx-auto">
-      <h2 className="text-xl font-semibold">BKR / VGC / 3-UURs Checks</h2>
+      <h2 className="text-2xl font-bold">Check documenten</h2>
+      <p className="my-4 text-gray-800">Wat wil je checken?</p>
 
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-4 flex-col">
         <Checkbox
-          label="BKR"
+          label="BeroepsKracht-Kindratio "
           checked={enableBkr}
           onChange={() => setEnableBkr((v) => !v)}
           readOnly={true}
           disabled={true}
         />
         <Checkbox
-          label="VGC"
+          label="Vaste Gezichten Criterium"
           checked={enableVgc}
           onChange={() => setEnableVgc((v) => !v)}
         />
         <Checkbox
-          label="3-UURs"
+          label="3-3-uursregeling"
           checked={enableThreeHours}
           onChange={() => setEnableThreeHours((v) => !v)}
         />
       </div>
 
-      <div className="grid grid-cols-1">
+      <p className="mt-6 text-gray-800">Om deze check te doen, heb ik de volgende documenten nodig:</p>
+
+      <div className="grid grid-cols-1 gap-2">
         {uploadSectionItems.map(
           (item, index) =>
             requiredVisibleKinds.includes(item.kind) && (
@@ -318,7 +321,7 @@ export default function ChecksPage() {
               : undefined
           }
         >
-          {isStartingCheck ? "Starting…" : "Start Check"}
+          {isStartingCheck ? "Starting…" : "Start de check"}
         </Button>
         {lastCheckId && (
           <span className="text-gray-500">

@@ -45,7 +45,7 @@ const CheckResults = ({ data }) => {
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
       <h2 className="text-xl font-semibold">
-        Check Results for {resultData.day}
+        Resultaten {resultData.day}
       </h2>
 
       <div className="overflow-x-auto max-h-[60vh] overflow-y-scroll border">

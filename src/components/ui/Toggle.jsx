@@ -7,7 +7,6 @@ export default function Toggle({
 }) {
   return (
     <label className="inline-flex items-center gap-2 cursor-pointer select-none">
-      <span className="text-sm text-gray-800">{label}</span>
       <input
         type="checkbox"
         className="sr-only"
@@ -29,6 +28,7 @@ export default function Toggle({
           }`}
         />
       </span>
+      <span className="text-gray-800">{label}</span>
     </label>
   );
 }

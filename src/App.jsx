@@ -4,7 +4,9 @@ import { ChecksProvider } from "./contexts/ChecksContext";
 function App() {
   return (
     <ChecksProvider>
-      <ChecksPage />
+      <div className="flex justify-center">
+        <ChecksPage />
+      </div>
     </ChecksProvider>
   );
 }
