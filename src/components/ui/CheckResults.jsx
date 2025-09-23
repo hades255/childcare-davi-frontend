@@ -1,7 +1,8 @@
 import React from "react";
-import { checkResult } from "../../mockdata";
+// import { checkResult } from "../../mockdata";
 
 const CheckResults = ({ data }) => {
+// const CheckResults = () => {
   // const data = checkResult;
 
   if (
@@ -16,6 +17,9 @@ const CheckResults = ({ data }) => {
   const resultData = data.result[1];
   const slices = resultData.slices || [];
   const summary = resultData.three_uurs_summary || {};
+  const modules = data.modules;
+  const checkVGC = modules.includes("vgc");
+  const checkThreeHours = modules.includes("threeHours");
 
   // Calculate BKR and VGC summaries
   const bkrSummary = slices.reduce(
@@ -27,19 +31,21 @@ const CheckResults = ({ data }) => {
     { yes: 0, no: 0 }
   );
 
-  const vgcSummary = slices.reduce(
-    (acc, slice) => {
-      if (slice.VGC === "Yes") acc.yes++;
-      else if (slice.VGC === "No") acc.no++;
-      return acc;
-    },
-    { yes: 0, no: 0 }
-  );
+  const vgcSummary = checkVGC
+    ? slices.reduce(
+        (acc, slice) => {
+          if (slice.VGC === "Yes") acc.yes++;
+          else if (slice.VGC === "No") acc.no++;
+          return acc;
+        },
+        { yes: 0, no: 0 }
+      )
+    : null;
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
       <h2 className="text-xl font-semibold">
-        Check Results for {resultData.day}
+        Resultaten {resultData.day}
       </h2>
 
       <div className="overflow-x-auto max-h-[60vh] overflow-y-scroll border">
@@ -62,12 +68,16 @@ const CheckResults = ({ data }) => {
               <th className="border border-gray-300 px-3 py-2 text-center">
                 BKR
               </th>
-              <th className="border border-gray-300 px-3 py-2 text-center">
-                VGC
-              </th>
-              <th className="border border-gray-300 px-3 py-2 text-center">
-                3-UURS
-              </th>
+              {checkVGC && (
+                <th className="border border-gray-300 px-3 py-2 text-center">
+                  VGC
+                </th>
+              )}
+              {checkThreeHours && (
+                <th className="border border-gray-300 px-3 py-2 text-center">
+                  3-UURS
+                </th>
+              )}
               <th className="border border-gray-300 px-3 py-2 text-left">
                 Details
               </th>
@@ -97,12 +107,16 @@ const CheckResults = ({ data }) => {
                 <td className="border border-gray-300 px-3 py-1 text-center">
                   {slice["BKR"]}
                 </td>
-                <td className="border border-gray-300 px-3 py-1 text-center">
-                  {slice["VGC"]}
-                </td>
-                <td className="border border-gray-300 px-3 py-1 text-center">
-                  {slice["3-UURS"]}
-                </td>
+                {checkVGC && (
+                  <td className="border border-gray-300 px-3 py-1 text-center">
+                    {slice["VGC"]}
+                  </td>
+                )}
+                {checkThreeHours && (
+                  <td className="border border-gray-300 px-3 py-1 text-center">
+                    {slice["3-UURS"]}
+                  </td>
+                )}
                 <td className="border border-gray-300 px-3 py-1">
                   {slice.Details}
                 </td>
@@ -117,12 +131,16 @@ const CheckResults = ({ data }) => {
         <p>
           <strong>BKR:</strong> Yes ({bkrSummary.yes}), No ({bkrSummary.no})
         </p>
-        <p>
-          <strong>VGC:</strong> Yes ({vgcSummary.yes}), No ({vgcSummary.no})
-        </p>
-        <p>
-          <strong>3-UURS:</strong> {summary["3-UURS"] || "N/A"}
-        </p>
+        {checkVGC && (
+          <p>
+            <strong>VGC:</strong> Yes ({vgcSummary.yes}), No ({vgcSummary.no})
+          </p>
+        )}
+        {checkThreeHours && (
+          <p>
+            <strong>3-UURS:</strong> {summary["3-UURS"] || "N/A"}
+          </p>
+        )}
         {summary.Reason && (
           <p>
             <strong>Reason:</strong> {summary.Reason}

@@ -7,8 +7,8 @@ import {
   getFileStatus,
   getModuleDocuments,
 } from "../../services/api";
-import { getKeyFromFileName } from "../../helpers/file";
 import { useChecks } from "../../contexts/ChecksContext";
+import { getKeyFromFileName } from "../../helpers/file";
 import Button from "./Button";
 import Icon from "./Icon";
 import FileFormatModal from "./FileFormatModal";
@@ -41,7 +41,7 @@ export default function FileUploadCard({
 
   return (
     <div
-      className={`mt-3 border border-gray-200 rounded-lg p-4 bg-white shadow-sm ${className}`}
+      className={`${className}`}
     >
       <div className="flex items-center justify-between mb-3">
         {action}

@@ -23,6 +23,7 @@ export const checkResult = {
     ["b7fd5b2c_vgc_list.json"],
   ],
   status: "ok",
+  modules: ["bkr", "vgc", "threeHours"],
   result: [
     "1e523f70-8b03-4977-9901-696f96929955",
     {
