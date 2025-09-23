@@ -91,7 +91,7 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
               ? "uploaden..."
               : file
               ? file.fileUrl.split(/[/\\]/).pop().substr(9)
-              : `Upload ${title}`}
+              : title}
           </Button>
           {file && (
             <Button
@@ -139,7 +139,11 @@ const uploadSectionItems = [
     kind: FileKind.CHILD_REGISTRATION,
     format: true,
   },
-  { title: "Upload personeelsplanning", kind: FileKind.STAFF_PLANNING, format: true },
+  {
+    title: "Upload personeelsplanning",
+    kind: FileKind.STAFF_PLANNING,
+    format: true,
+  },
   { title: "VGC List (JSON)", kind: FileKind.VGC_LIST },
 ];
 
@@ -298,7 +302,9 @@ export default function ChecksPage() {
         />
       </div>
 
-      <p className="mt-6 text-gray-800">Om deze check te doen, heb ik de volgende documenten nodig:</p>
+      <p className="mt-6 text-gray-800">
+        Om deze check te doen, heb ik de volgende documenten nodig:
+      </p>
 
       <div className="grid grid-cols-1 gap-2">
         {uploadSectionItems.map(
