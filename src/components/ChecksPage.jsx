@@ -204,7 +204,7 @@ export default function ChecksPage() {
     const modules = [];
     if (enableBkr) modules.push("bkr");
     if (enableVgc) modules.push("vgc");
-    if (enableThreeHours) modules.push("three_hours");
+    if (enableThreeHours) modules.push("threeHours");
 
     // Additional validation per selected module
     if (enableVgc && !fileMap[FileKind.VGC_LIST]) {
