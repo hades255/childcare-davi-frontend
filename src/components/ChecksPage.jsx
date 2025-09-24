@@ -14,6 +14,7 @@ import FileUploadCard from "./ui/FileUploadCard";
 import Button from "./ui/Button";
 import Toggle from "./ui/Toggle";
 import FileItem from "./ui/FileItem";
+import ComplianceCheckButton from "./ui/ComplianceCheckButton";
 
 const Checkbox = memo(function Checkbox({
   label,
@@ -81,25 +82,26 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
       format={format && file && isFormatNeedFile(file.fileUrl)}
       action={
         <div className="flex items-center gap-2">
-          <Button
+          <ComplianceCheckButton
             onClick={handlePickAndUpload}
             disabled={isUploading}
             size="lg"
-            variant="success"
+            variant={isUploading ? "uploading" : file ? "uploaded" : "normal"}
+            icon={isUploading ? "loader-2" : file ? "" : "cloudUpload"}
           >
             {isUploading
               ? "uploaden..."
               : file
               ? file.fileUrl.split(/[/\\]/).pop().substr(9)
               : title}
-          </Button>
+          </ComplianceCheckButton>
           {file && (
-            <Button
+            <ComplianceCheckButton
               onClick={handleDelete}
               icon={"x"}
-              variant="danger"
+              variant="remove"
               size="xs"
-              className="!rounded-full"
+              className="!rounded-full !p-0.5"
             />
           )}
         </div>
@@ -317,7 +319,7 @@ export default function ChecksPage() {
 
       <div className="flex gap-2 items-center">
         <DateInput date={checkDate} onChange={handleDateChange} />
-        <Button
+        <ComplianceCheckButton
           onClick={handleStartCheck}
           disabled={!validation.canStart || isStartingCheck}
           icon={isStartingCheck ? "loader-2" : "play"}
@@ -326,9 +328,12 @@ export default function ChecksPage() {
               ? `Missing: ${validation.missing.join(", ")}`
               : undefined
           }
+          variant={
+            !validation.canStart || isStartingCheck ? "disabled" : "normal"
+          }
         >
           {isStartingCheck ? "Starting…" : "Start de check"}
-        </Button>
+        </ComplianceCheckButton>
         {lastCheckId && (
           <span className="text-gray-500">
             Last Check ID: <strong>{lastCheckId}</strong>
@@ -336,34 +341,36 @@ export default function ChecksPage() {
         )}
       </div>
 
-      <div className="border-t border-gray-200 pt-3 flex flex-col gap-2">
-        <strong>Check Progress</strong>
-        <div className="flex gap-2 items-center flex-wrap">
-          <select
-            value={progressCheckId}
-            onChange={(e) => setProgressCheckId(e.target.value)}
-            placeholder="Enter check id"
-            className="w-96 px-2 py-1 border border-gray-300 rounded-md"
-          >
-            <option value=""></option>
-            {checkIds.map((item, index) => (
-              <option key={index} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-          <Button
-            onClick={handleGetProgress}
-            variant="secondary"
-            icon="refresh-cw"
-          >
-            Get Progress
-          </Button>
-        </div>
+      {checkIds && checkIds.length > 0 && (
+        <div className="border-t border-gray-200 pt-3 flex flex-col gap-2">
+          <strong>Check Progress</strong>
+          <div className="flex gap-2 items-center flex-wrap">
+            <select
+              value={progressCheckId}
+              onChange={(e) => setProgressCheckId(e.target.value)}
+              placeholder="Enter check id"
+              className="w-96 px-2 py-1 border border-gray-300 rounded-md"
+            >
+              <option value=""></option>
+              {checkIds.map((item, index) => (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <Button
+              onClick={handleGetProgress}
+              variant="secondary"
+              icon="refresh-cw"
+            >
+              Get Progress
+            </Button>
+          </div>
 
-        {progressResult && <CheckResults data={progressResult} />}
-        {/* <CheckResults /> */}
-      </div>
+          {progressResult && <CheckResults data={progressResult} />}
+          {/* <CheckResults /> */}
+        </div>
+      )}
     </div>
   );
 }

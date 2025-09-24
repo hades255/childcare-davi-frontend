@@ -146,6 +146,38 @@ export default function Icon({ name, size = 16, className = "", ...props }) {
         <polyline points="7,3 7,8 15,8" />
       </svg>
     ),
+    cloudUpload: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Cloud shape */}
+        <path d="M17.5 18.5H6.5A4.5 4.5 0 0 1 7 9.1 6.5 6.5 0 0 1 19 10.5a4 4 0 0 1-1.5 7.5z" />
+        {/* Upload arrow */}
+        <path d="M12 12v6" />
+        <path d="M9 15l3-3 3 3" />
+      </svg>
+    ),
+    cloudDownload: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Cloud shape */}
+        <path d="M17.5 18.5H6.5A4.5 4.5 0 0 1 7 9.1 6.5 6.5 0 0 1 19 10.5a4 4 0 0 1-1.5 7.5z" />
+        {/* Download arrow */}
+        <path d="M12 12v6" />
+        <path d="M9 15l3 3 3-3" />
+      </svg>
+    ),
   };
 
   const iconElement = icons[name];
