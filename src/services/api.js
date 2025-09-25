@@ -1,7 +1,3 @@
-// Lightweight API client for uploads and checks
-
-import { getKeyFromFileName } from "../helpers/file";
-
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 export const FileKind = {
@@ -12,18 +8,32 @@ export const FileKind = {
 };
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-  });
-  if (!response.ok) {
-    const text = await response.text().catch(() => "");
-    throw new Error(text || `Request failed: ${response.status}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+    });
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => "");
+      const errorMessage = text || `Request failed: ${response.status}`;
+      // alert(`Error: ${errorMessage}`);
+      throw new Error(errorMessage);
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      return response.json();
+    }
+    return response.text();
+  } catch (error) {
+    console.error("API Request failed:", error);
+    alert(
+      error.message.includes("Failed to fetch")
+        ? "Network error: Unable to connect to server. Please check your internet connection."
+        : `Error: ${error.message}`
+    );
+    throw error;
   }
-  const contentType = response.headers.get("content-type") || "";
-  if (contentType.includes("application/json")) {
-    return response.json();
-  }
-  return response.text();
 }
 
 export async function uploadFile(file, kind) {
@@ -71,7 +81,6 @@ export function getFileViewUrl(fileKey) {
   return `${API_BASE_URL}/files/${encodeURIComponent(fileKey)}/view`;
 }
 
-//  todo    create remove file endpoint on server side
 export async function removeFile(fileKey) {
   return request(`/files/${encodeURIComponent(fileKey)}`, {
     method: "DELETE",
