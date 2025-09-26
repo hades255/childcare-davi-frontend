@@ -2,8 +2,10 @@ import React from "react";
 import { checkResult } from "../../mockdata";
 
 const CheckResults = ({ data }) => {
-// const CheckResults = () => {
+  // const CheckResults = () => {
   // const data = checkResult;
+
+  if (!data) return <p>No data available</p>;
 
   const modules = data.modules;
   const checkVGC = modules.includes("vgc");
@@ -20,7 +22,9 @@ const CheckResults = ({ data }) => {
         <p>{data.summary}</p>
         <p>Files</p>
         {data.references.flat().map((item, index) => (
-          <p key={index} className="pl-2 text-sm">{item.substring(9)}</p>
+          <p key={index} className="pl-2 text-sm">
+            {item.substring(9)}
+          </p>
         ))}
         <SummaryView
           result={resultData}

@@ -245,10 +245,7 @@ export default function ChecksPage() {
       setProgressCheckId(checkId);
       setCheckIds((prev) => [...prev, checkId]);
 
-      const timer = setTimeout(handleGetProgress, 300);
-      return () => {
-        if (timer) clearTimeout(timer);
-      };
+      handleGetProgress(checkId);
     } catch (e) {
       console.error(e);
       alert(e.message || "Failed to start check");
@@ -257,13 +254,15 @@ export default function ChecksPage() {
     }
   }
 
-  async function handleGetProgress() {
-    if (!progressCheckId) {
+  async function handleGetProgress(checkId = "") {
+    const _checkId = checkId || progressCheckId
+    console.log(_checkId)
+    if (!_checkId) {
       alert("Please enter a check id.");
       return;
     }
     try {
-      const res = await getCheckProgress(progressCheckId);
+      const res = await getCheckProgress(_checkId);
       setProgressResult(res);
     } catch (e) {
       console.error(e);
