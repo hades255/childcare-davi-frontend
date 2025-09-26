@@ -1,5 +1,6 @@
 export const checkResult = {
   summary: "Checks completed for ['bkr,vgc,threeHours'] of flexkids",
+  date: "18-08-2025",
   issues: [],
   references: [
     [

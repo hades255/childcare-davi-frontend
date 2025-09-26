@@ -244,6 +244,11 @@ export default function ChecksPage() {
       setLastCheckId(checkId);
       setProgressCheckId(checkId);
       setCheckIds((prev) => [...prev, checkId]);
+
+      const timer = setTimeout(handleGetProgress, 300);
+      return () => {
+        if (timer) clearTimeout(timer);
+      };
     } catch (e) {
       console.error(e);
       alert(e.message || "Failed to start check");
@@ -368,7 +373,7 @@ export default function ChecksPage() {
           </div>
 
           {progressResult && <CheckResults data={progressResult} />}
-          {/* <CheckResults /> */}
+          <CheckResults />
         </div>
       )}
     </div>
