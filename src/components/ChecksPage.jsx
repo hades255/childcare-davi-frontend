@@ -244,8 +244,6 @@ export default function ChecksPage() {
       setLastCheckId(checkId);
       setProgressCheckId(checkId);
       setCheckIds((prev) => [...prev, checkId]);
-
-      handleGetProgress(checkId);
     } catch (e) {
       console.error(e);
       alert(e.message || "Failed to start check");
@@ -254,10 +252,8 @@ export default function ChecksPage() {
     }
   }
 
-  async function handleGetProgress(checkId = "") {
-    console.log(checkId)
-    const _checkId = checkId || progressCheckId
-    console.log(_checkId)
+  async function handleGetProgress() {
+    const _checkId = progressCheckId
     if (!_checkId) {
       alert("Please enter a check id.");
       return;
