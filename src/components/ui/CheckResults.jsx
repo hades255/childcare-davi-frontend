@@ -3,7 +3,7 @@ import { checkResult } from "../../mockdata";
 
 const CheckResults = ({ data }) => {
 // const CheckResults = () => {
-  const data = checkResult;
+  // const data = checkResult;
 
   const modules = data.modules;
   const checkVGC = modules.includes("vgc");
