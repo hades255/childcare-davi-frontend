@@ -255,6 +255,7 @@ export default function ChecksPage() {
   }
 
   async function handleGetProgress(checkId = "") {
+    console.log(checkId)
     const _checkId = checkId || progressCheckId
     console.log(_checkId)
     if (!_checkId) {
