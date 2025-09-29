@@ -48,9 +48,8 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
         const input = document.createElement("input");
         input.type = "file";
         input.accept =
-          kind === FileKind.VGC_LIST
-            ? "application/json"
-            : "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.doc,.docx";
+          kind ===
+          "image/*,application/pdf,application/msword,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.doc,.docx";
         input.onchange = async () => {
           if (input.files && input.files[0]) {
             setIsUploading(true);
@@ -145,7 +144,7 @@ const uploadSectionItems = [
     kind: FileKind.STAFF_PLANNING,
     format: true,
   },
-  { title: "VGC List (JSON)", kind: FileKind.VGC_LIST },
+  { title: "VGC List", kind: FileKind.VGC_LIST },
 ];
 
 export default function ChecksPage() {
