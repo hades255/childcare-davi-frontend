@@ -2,50 +2,40 @@ import React from "react";
 import { checkResult } from "../../mockdata";
 
 const CheckResults = ({ data }) => {
-  // const CheckResults = () => {
   // const data = checkResult;
 
-  if (!data) return <p>No data available</p>;
-
   const modules = data.modules;
-  const checkVGC = modules.includes("vgc");
-  const checkThreeHours = modules.includes("threeHours");
-
   const resultData = data.result;
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      <h2 className="text-xl font-semibold">Resultaten {data.date}</h2>
+    <>
+      <div className="p-6 space-y-6 max-w-7xl mx-auto">
+        <h2 className="text-xl font-semibold">Resultaten {data.date}</h2>
 
-      <div className="bg-gray-100 p-4 rounded space-y-2 max-w-md">
-        <h3 className="font-semibold text-lg">Summary</h3>
-        <p>{data.summary}</p>
-        <p>Files</p>
-        {data.references.flat().map((item, index) => (
-          <p key={index} className="pl-2 text-sm">
-            {item.substring(9)}
-          </p>
-        ))}
-        <SummaryView
-          result={resultData}
-          checkVGC={checkVGC}
-          checkThreeHours={checkThreeHours}
-        />
+        <div className="bg-gray-100 p-4 rounded space-y-2 max-w-md">
+          <h3 className="font-semibold text-lg">Summary</h3>
+          <p>{data.summary}</p>
+          <p>Files</p>
+          {data.references.flat().map((item, index) => (
+            <p key={index} className="pl-2 text-sm">
+              {item.substring(9)}
+            </p>
+          ))}
+          <SummaryView result={resultData} modules={modules} />
+        </div>
+
+        <ResultTable resultData={resultData} modules={modules} />
       </div>
-
-      <ResultTable
-        resultData={resultData}
-        checkVGC={checkVGC}
-        checkThreeHours={checkThreeHours}
-      />
-    </div>
+    </>
   );
 };
 
 export default CheckResults;
 
-const SummaryView = ({ result, checkVGC, checkThreeHours }) => {
+const SummaryView = ({ result, modules }) => {
   if (!result || result.length < 2) return <></>;
+  const checkVGC = modules.includes("vgc");
+  const checkThreeHours = modules.includes("threeHours");
 
   const resultData = result[1];
   const slices = resultData.slices || [];
@@ -106,9 +96,11 @@ const SummaryView = ({ result, checkVGC, checkThreeHours }) => {
   );
 };
 
-const ResultTable = ({ resultData, checkVGC, checkThreeHours }) => {
+const ResultTable = ({ resultData, modules }) => {
   if (!resultData || resultData.length < 2 || !resultData[1].slices)
     return <></>;
+  const checkVGC = modules.includes("vgc");
+  const checkThreeHours = modules.includes("threeHours");
 
   return (
     <div className="overflow-x-auto max-h-[60vh] overflow-y-scroll border">

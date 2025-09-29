@@ -15,6 +15,7 @@ import Button from "./ui/Button";
 import Toggle from "./ui/Toggle";
 import FileItem from "./ui/FileItem";
 import ComplianceCheckButton from "./ui/ComplianceCheckButton";
+import ProgressBarPolling from "./ui/ProgressBarPolling";
 
 const Checkbox = memo(function Checkbox({
   label,
@@ -265,6 +266,10 @@ export default function ChecksPage() {
     }
   }
 
+  function handleUpdateProgressResult(res) {
+    setProgressResult(res);
+  }
+
   useEffect(() => {
     async function getAllCheckIds() {
       try {
@@ -279,7 +284,7 @@ export default function ChecksPage() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-3 p-4 max-w-[980px] mx-auto">
+    <div className="w-full flex flex-col gap-3 p-4 max-w-[980px] mx-auto">
       <h2 className="text-2xl font-bold">Check documenten</h2>
       <p className="my-4 text-gray-800">Wat wil je checken?</p>
 
@@ -366,8 +371,14 @@ export default function ChecksPage() {
             </Button>
           </div>
 
+          {progressCheckId && (
+            <ProgressBarPolling
+              checkId={progressCheckId}
+              onComplete={handleUpdateProgressResult}
+            />
+          )}
+
           {progressResult && <CheckResults data={progressResult} />}
-          <CheckResults />
         </div>
       )}
     </div>
