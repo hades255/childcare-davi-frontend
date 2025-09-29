@@ -87,7 +87,6 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
             disabled={isUploading}
             size="lg"
             variant={isUploading ? "uploading" : file ? "uploaded" : "normal"}
-            icon={isUploading ? "loader-2" : file ? "" : "cloudUpload"}
           >
             {isUploading
               ? "uploaden..."
@@ -98,7 +97,6 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
           {file && (
             <ComplianceCheckButton
               onClick={handleDelete}
-              icon={"x"}
               variant="remove"
               size="xs"
               className="!rounded-full !p-0.5"
@@ -253,7 +251,7 @@ export default function ChecksPage() {
   }
 
   async function handleGetProgress() {
-    const _checkId = progressCheckId
+    const _checkId = progressCheckId;
     if (!_checkId) {
       alert("Please enter a check id.");
       return;

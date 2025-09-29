@@ -1,4 +1,5 @@
 import Icon from "./Icon";
+import Spinner from "./Spinner";
 
 export default function ComplianceCheckButton({
   children,
@@ -32,9 +33,14 @@ export default function ComplianceCheckButton({
 
   return (
     <button className={cls} {...props}>
-      {icon && iconPosition === "left" && <Icon name={icon} size={iconSize} />}
+      {variant === "uploading" ? (
+        <Spinner className="text-blue-600" size={24} strokeWidth={2} />
+      ) : variant === "remove" ? (
+        <Icon name={"x"} size={iconSize} />
+      ) : (
+        <Icon name={"cloudUpload"} size={iconSize} />
+      )}
       {children}
-      {icon && iconPosition === "right" && <Icon name={icon} size={iconSize} />}
     </button>
   );
 }
