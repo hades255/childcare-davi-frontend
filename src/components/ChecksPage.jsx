@@ -15,6 +15,7 @@ import Button from "./ui/Button";
 import Toggle from "./ui/Toggle";
 import FileItem from "./ui/FileItem";
 import ComplianceCheckButton from "./ui/ComplianceCheckButton";
+import ProgressBarPolling from "./ui/ProgressBarPolling";
 
 const Checkbox = memo(function Checkbox({
   label,
@@ -87,7 +88,6 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
             disabled={isUploading}
             size="lg"
             variant={isUploading ? "uploading" : file ? "uploaded" : "normal"}
-            icon={isUploading ? "loader-2" : file ? "" : "cloudUpload"}
           >
             {isUploading
               ? "uploaden..."
@@ -98,7 +98,6 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
           {file && (
             <ComplianceCheckButton
               onClick={handleDelete}
-              icon={"x"}
               variant="remove"
               size="xs"
               className="!rounded-full !p-0.5"
@@ -253,7 +252,7 @@ export default function ChecksPage() {
   }
 
   async function handleGetProgress() {
-    const _checkId = progressCheckId
+    const _checkId = progressCheckId;
     if (!_checkId) {
       alert("Please enter a check id.");
       return;
@@ -265,6 +264,10 @@ export default function ChecksPage() {
       console.error(e);
       alert(e.message || "Failed to get progress");
     }
+  }
+
+  function handleUpdateProgressResult(res) {
+    setProgressResult(res);
   }
 
   useEffect(() => {
@@ -281,7 +284,7 @@ export default function ChecksPage() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-3 p-4 max-w-[980px] mx-auto">
+    <div className="w-full flex flex-col gap-3 p-4 max-w-[980px] mx-auto">
       <h2 className="text-2xl font-bold">Check documenten</h2>
       <p className="my-4 text-gray-800">Wat wil je checken?</p>
 
@@ -368,8 +371,14 @@ export default function ChecksPage() {
             </Button>
           </div>
 
+          {progressCheckId && (
+            <ProgressBarPolling
+              checkId={progressCheckId}
+              onComplete={handleUpdateProgressResult}
+            />
+          )}
+
           {progressResult && <CheckResults data={progressResult} />}
-          <CheckResults />
         </div>
       )}
     </div>
