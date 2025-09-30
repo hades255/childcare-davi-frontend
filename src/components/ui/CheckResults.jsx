@@ -13,15 +13,21 @@ const CheckResults = ({ data }) => {
       <div className="py-6 space-y-6 max-w-7xl">
         <h2 className="text-xl font-semibold">Resultaten {data.date}</h2>
 
-        <ComplianceDetailView
-          checkResult={data}
-          groupName="Dolfijntjes"
-          groupType="Baby Group"
-          bkrDailyLimitHours={3}
-        />
+        {resultData && resultData.length >= 2 ? (
+          <ComplianceDetailView
+            checkResult={data}
+            groupName="Dolfijntjes"
+            groupType="Baby Group"
+            bkrDailyLimitHours={3}
+          />
+        ) : (
+          <p>No data available</p>
+        )}
 
         <hr />
-        <p className="text-gray-400 text-xs">Detailed version. Will he hidden in prod version</p>
+        <p className="text-gray-400 text-xs">
+          Detailed version. Will he hidden in prod version
+        </p>
 
         <div className="space-y-2 max-w-md">
           <h3 className="font-semibold text-lg">Summary</h3>
