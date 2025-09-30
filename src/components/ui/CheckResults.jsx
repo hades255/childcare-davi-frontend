@@ -128,35 +128,37 @@ const ResultTable = ({ resultData, modules }) => {
       </div>
       <div className="overflow-x-auto max-h-[60vh] overflow-y-scroll border">
         <table className="min-w-full border border-gray-300 rounded">
-          <thead className="bg-gray-100">
+          <thead className="bg-green-100">
             <tr>
-              <th className="border border-gray-300 px-3 py-2 text-left">
+              <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-left">
                 From
               </th>
-              <th className="border border-gray-300 px-3 py-2 text-left">To</th>
-              <th className="border border-gray-300 px-3 py-2 text-center">
+              <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-left">
+                To
+              </th>
+              <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-center">
                 Children
               </th>
-              <th className="border border-gray-300 px-3 py-2 text-center">
+              <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-center">
                 Required Staff
               </th>
-              <th className="border border-gray-300 px-3 py-2 text-center">
+              <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-center">
                 Staff
               </th>
-              <th className="border border-gray-300 px-3 py-2 text-center">
+              <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-center">
                 BKR
               </th>
               {checkVGC && (
-                <th className="border border-gray-300 px-3 py-2 text-center">
+                <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-center">
                   VGC
                 </th>
               )}
               {checkThreeHours && (
-                <th className="border border-gray-300 px-3 py-2 text-center">
+                <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-center">
                   3-UURS
                 </th>
               )}
-              <th className="border border-gray-300 px-3 py-2 text-left">
+              <th className="sticky top-0 z-0 border border-greeb-300 bg-green-100 text-green-700 px-3 py-2 text-left">
                 Details
               </th>
             </tr>
@@ -580,7 +582,7 @@ function DownloadDropdownButton({ data, modules }) {
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <Button
         onClick={() => setOpen(!open)}
-        className="inline-flex justify-center items-center text-sm"
+        className="inline-flex justify-center items-center text-sm !py-1"
         variant="normal"
       >
         Download
