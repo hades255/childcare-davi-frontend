@@ -30,6 +30,7 @@ export default function Button({
     secondary: "bg-white text-gray-900 hover:bg-gray-50 border border-gray-300",
     ghost:
       "bg-transparent text-gray-700 hover:bg-gray-100 border border-transparent",
+    normal: "bg-[#23BD92] text-white hover:bg-green-400",
   };
   const cls = `${base} ${sizes[size] ?? sizes.md} ${
     variants[variant] ?? variants.primary
