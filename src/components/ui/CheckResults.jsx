@@ -26,7 +26,7 @@ const CheckResults = ({ data }) => {
 
         <hr />
         <p className="text-gray-400 text-xs">
-          Detailed version. Will he hidden in prod version
+          Detailed version. Will be hidden in prod version
         </p>
 
         <div className="space-y-2 max-w-md">
