@@ -1,5 +1,6 @@
 import React from "react";
 import { checkResult } from "../../mockdata";
+import Icon from "./Icon";
 
 const CheckResults = ({ data }) => {
   // const data = checkResult;
@@ -9,10 +10,20 @@ const CheckResults = ({ data }) => {
 
   return (
     <>
-      <div className="p-6 space-y-6 max-w-7xl mx-auto">
+      <div className="py-6 space-y-6 max-w-7xl">
         <h2 className="text-xl font-semibold">Resultaten {data.date}</h2>
 
-        <div className="bg-gray-100 p-4 rounded space-y-2 max-w-md">
+        <ComplianceDetailView
+          checkResult={data}
+          groupName="Dolfijntjes"
+          groupType="Baby Group"
+          bkrDailyLimitHours={3}
+        />
+
+        <hr />
+        <p className="text-gray-400 text-xs">Detailed version. Will he hidden in prod version</p>
+
+        <div className="space-y-2 max-w-md">
           <h3 className="font-semibold text-lg">Summary</h3>
           <p>{data.summary}</p>
           <p>Files</p>
@@ -177,3 +188,207 @@ const ResultTable = ({ resultData, modules }) => {
     </div>
   );
 };
+
+/** ----------------- helpers ----------------- */
+function toMin(t) {
+  if (!t) return null;
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+function minToStr(mins) {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+}
+function mergeFailRanges(slices, key /* "BKR" | "VGC" */) {
+  const failing = (slices || []).filter((s) => s && s[key] === "No");
+  if (!failing.length) return { ranges: [], totalFailMins: 0, slots: 0 };
+
+  failing.sort((a, b) => toMin(a["From Time"]) - toMin(b["From Time"]));
+  const merged = [];
+  let total = 0;
+
+  for (const s of failing) {
+    const a = toMin(s["From Time"]);
+    const b = toMin(s["To Time"]);
+    total += b - a;
+
+    if (!merged.length) {
+      merged.push([a, b]);
+      continue;
+    }
+    const last = merged[merged.length - 1];
+    if (a === last[1]) last[1] = b; // contiguous -> extend
+    else merged.push([a, b]);
+  }
+
+  const ranges = merged.map(([a, b]) => ({
+    text: `${minToStr(a)}-${minToStr(b)}`,
+    durMins: b - a,
+  }));
+  return { ranges, totalFailMins: total, slots: failing.length };
+}
+function minutesToHoursStr(mins) {
+  const hours = mins / 60;
+  // show with 1 decimal if needed
+  return (Math.round(hours * 10) / 10).toFixed(hours % 1 === 0 ? 0 : 1);
+}
+function countUnknownVgc(slices) {
+  return (slices || []).filter((s) => s && s.VGC === "Unknown").length;
+}
+function recommendStaffFromDetails(slices) {
+  const counts = new Map();
+  for (const s of slices || []) {
+    for (const line of s.Details || []) {
+      // "VGC failed: A, B for Child X"
+      const m = line.match(/^VGC failed:\s*(.+?)\s+for\s+/i);
+      if (!m) continue;
+      const namesPart = m[1];
+      const names = namesPart
+        .split(/[,;&]/)
+        .map((x) => x.trim())
+        .filter(Boolean);
+      for (const nm of names) counts.set(nm, (counts.get(nm) || 0) + 1);
+    }
+  }
+  if (!counts.size) return null;
+  let best = null,
+    bestCnt = -1;
+  for (const [name, cnt] of counts.entries()) {
+    if (cnt > bestCnt) {
+      best = name;
+      bestCnt = cnt;
+    }
+  }
+  return best;
+}
+
+/** ----------------- main component ----------------- */
+export function ComplianceDetailView({
+  checkResult,
+  groupName, // optional: "Dolfijntjes"
+  groupType = "Group", // optional: "Baby Group"
+  showUnknownNote = true, // show note about Unknown slots for VGC
+}) {
+  // Pull the day object with slices
+  const dayObj = Array.isArray(checkResult?.result)
+    ? checkResult.result.find((x) => x && typeof x === "object" && x.slices)
+    : null;
+
+  const dateStr = dayObj?.day || checkResult?.date || "";
+  const slices = dayObj?.slices || [];
+  const three = dayObj?.three_uurs_summary || {};
+
+  const checkVGC = checkResult?.modules.includes("vgc");
+  const checkThreeHours = checkResult?.modules.includes("threeHours");
+
+  const groupLabel = groupName ? `${groupType} "${groupName}"` : groupType;
+
+  // Module computations
+  const bkr = mergeFailRanges(slices, "BKR");
+  const vgc = mergeFailRanges(slices, "VGC");
+  const vgcUnknownSlots = countUnknownVgc(slices);
+  const vgcRec = recommendStaffFromDetails(slices);
+
+  // 3-UURS block straight from summary
+  const threeFlag = three["3-UURS"];
+  const threeReason = three.Reason;
+  const threeDevs = Array.isArray(three.Deviations) ? three.Deviations : [];
+
+  return (
+    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: 1.6 }}>
+      <div style={{ fontWeight: 700, marginBottom: 8 }}>
+        {dateStr} — {groupLabel}
+      </div>
+
+      {/* BKR */}
+      <section style={{ marginBottom: 16 }}>
+        <div style={{ fontWeight: 700, marginBottom: 4 }}>BKR</div>
+        {bkr.ranges.length ? (
+          <>
+            {bkr.ranges.map((r, i) => (
+              <div key={`bkr-range-${i}`} className="flex items-center gap-1">
+                <Icon name="redRoundWarning" /> {r.text}
+              </div>
+            ))}
+            <div style={{ marginTop: 6, color: "#333" }}>
+              {`BKR failed in ${bkr.slots} slot${
+                bkr.slots !== 1 ? "s" : ""
+              } (${minutesToHoursStr(bkr.totalFailMins)} ${
+                bkr.totalFailMins === 60 ? "hour" : "hours"
+              } total).`}{" "}
+              The 3-hours allowance is evaluated separately below.
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-1">
+            <Icon name="greenRoundCheck" /> All slots compliant.
+          </div>
+        )}
+      </section>
+
+      {/* VGC */}
+      {checkVGC && (
+        <section style={{ marginBottom: 16 }}>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>VGC</div>
+          {vgc.ranges.length ? (
+            <>
+              {vgc.ranges.map((r, i) => (
+                <div key={`vgc-range-${i}`} className="flex items-center gap-1">
+                  <Icon name="redRoundWarning" /> {r.text}
+                </div>
+              ))}
+              <div style={{ marginTop: 6, color: "#333" }}>
+                {`VGC not met in ${vgc.slots} slot${
+                  vgc.slots !== 1 ? "s" : ""
+                } (${minutesToHoursStr(vgc.totalFailMins)} ${
+                  vgc.totalFailMins === 60 ? "hour" : "hours"
+                } total).`}
+                {vgcRec
+                  ? ` Recommendation: try scheduling staff member ${vgcRec}.`
+                  : ""}
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-1">
+              <Icon name="greenRoundCheck" /> All slots compliant.
+            </div>
+          )}
+          {showUnknownNote && vgcUnknownSlots > 0 ? (
+            <div style={{ marginTop: 6, color: "#777", fontSize: 12 }}>
+              {`${vgcUnknownSlots} slot${
+                vgcUnknownSlots !== 1 ? "s were" : " was"
+              } marked as "Unknown" and not counted in VGC results (likely outside staffed windows or missing data).`}
+            </div>
+          ) : null}
+        </section>
+      )}
+
+      {/* 3-UURS */}
+      {checkThreeHours && (
+        <section>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>3-UURS</div>
+          {threeFlag && (
+            <div>
+              {threeFlag === "Yes" ? (
+                <Icon name="greenRoundCheck" />
+              ) : (
+                <Icon name="redRoundWarning" />
+              )}
+            </div>
+          )}
+          {threeReason ? (
+            <div style={{ marginTop: 6 }}>{threeReason}</div>
+          ) : null}
+          {threeDevs.length ? (
+            <ul style={{ margin: "6px 0 0 16px" }}>
+              {threeDevs.map((d, i) => (
+                <li key={`dev-${i}`}>{d}</li>
+              ))}
+            </ul>
+          ) : null}
+        </section>
+      )}
+    </div>
+  );
+}

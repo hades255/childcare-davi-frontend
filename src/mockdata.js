@@ -513,9 +513,9 @@ export const checkResult = {
           VGC: "No",
           Details: [
             "BKR failed: 1 staff for 10 children (need 2)",
-            "Jemima Joren, Amy van Lieshout for Abel Pagliero",
-            "Jemima Joren for Dani Brandsma",
-            "Jemima Joren, Amy van Lieshout for Ida de Graaf",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Abel Pagliero",
+            "VGC failed: Jemima Joren for Dani Brandsma",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Ida de Graaf",
           ],
         },
         {
@@ -529,9 +529,9 @@ export const checkResult = {
           VGC: "No",
           Details: [
             "BKR failed: 1 staff for 10 children (need 2)",
-            "Jemima Joren, Amy van Lieshout for Abel Pagliero",
-            "Jemima Joren for Dani Brandsma",
-            "Jemima Joren, Amy van Lieshout for Ida de Graaf",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Abel Pagliero",
+            "VGC failed: Jemima Joren for Dani Brandsma",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Ida de Graaf",
           ],
         },
         {
@@ -545,9 +545,9 @@ export const checkResult = {
           VGC: "No",
           Details: [
             "BKR failed: 1 staff for 10 children (need 2)",
-            "Jemima Joren, Amy van Lieshout for Abel Pagliero",
-            "Jemima Joren for Dani Brandsma",
-            "Jemima Joren, Amy van Lieshout for Ida de Graaf",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Abel Pagliero",
+            "VGC failed: Jemima Joren for Dani Brandsma",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Ida de Graaf",
           ],
         },
         {
@@ -561,9 +561,9 @@ export const checkResult = {
           VGC: "No",
           Details: [
             "BKR failed: 1 staff for 10 children (need 2)",
-            "Jemima Joren, Amy van Lieshout for Abel Pagliero",
-            "Jemima Joren for Dani Brandsma",
-            "Jemima Joren, Amy van Lieshout for Ida de Graaf",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Abel Pagliero",
+            "VGC failed: Jemima Joren for Dani Brandsma",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Ida de Graaf",
           ],
         },
         {
@@ -577,9 +577,9 @@ export const checkResult = {
           VGC: "No",
           Details: [
             "BKR failed: 1 staff for 10 children (need 2)",
-            "Jemima Joren, Amy van Lieshout for Abel Pagliero",
-            "Jemima Joren for Dani Brandsma",
-            "Jemima Joren, Amy van Lieshout for Ida de Graaf",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Abel Pagliero",
+            "VGC failed: Jemima Joren for Dani Brandsma",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Ida de Graaf",
           ],
         },
         {
@@ -593,9 +593,9 @@ export const checkResult = {
           VGC: "No",
           Details: [
             "BKR failed: 1 staff for 10 children (need 2)",
-            "Jemima Joren, Amy van Lieshout for Abel Pagliero",
-            "Jemima Joren for Dani Brandsma",
-            "Jemima Joren, Amy van Lieshout for Ida de Graaf",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Abel Pagliero",
+            "VGC failed: Jemima Joren for Dani Brandsma",
+            "VGC failed: Jemima Joren, Amy van Lieshout for Ida de Graaf",
           ],
         },
         {

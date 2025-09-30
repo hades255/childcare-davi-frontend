@@ -120,15 +120,13 @@ const DateInput = memo(function DateInput({ date, onChange }) {
   };
 
   return (
-    <div className="flex flex-col">
-      <input
-        type="date"
-        id="dateInput"
-        value={date}
-        onChange={handleChange}
-        className="border-b border-gray-300 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
-      />
-    </div>
+    <input
+      type="date"
+      id="dateInput"
+      value={date}
+      onChange={handleChange}
+      className="border-b border-gray-300 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
+    />
   );
 });
 
@@ -320,32 +318,36 @@ export default function ChecksPage() {
         )}
       </div>
 
-      <div className="flex gap-2 items-center">
-        <DateInput date={checkDate} onChange={handleDateChange} />
-        <ComplianceCheckButton
-          onClick={handleStartCheck}
-          disabled={!validation.canStart || isStartingCheck}
-          icon={isStartingCheck ? "loader-2" : "play"}
-          title={
-            !validation.canStart && validation.missing.length
-              ? `Missing: ${validation.missing.join(", ")}`
-              : undefined
-          }
-          variant={
-            !validation.canStart || isStartingCheck ? "disabled" : "normal"
-          }
-        >
-          {isStartingCheck ? "Starting…" : "Start de check"}
-        </ComplianceCheckButton>
-        {lastCheckId && (
-          <span className="text-gray-500">
-            Last Check ID: <strong>{lastCheckId}</strong>
-          </span>
-        )}
+      <div className="flex flex-col gap-2">
+        <div>
+          <DateInput date={checkDate} onChange={handleDateChange} />
+        </div>
+        <div className="flex gap-2 items-center">
+          <ComplianceCheckButton
+            onClick={handleStartCheck}
+            disabled={!validation.canStart || isStartingCheck}
+            icon={isStartingCheck ? "loader-2" : "play"}
+            title={
+              !validation.canStart && validation.missing.length
+                ? `Missing: ${validation.missing.join(", ")}`
+                : undefined
+            }
+            variant={
+              !validation.canStart || isStartingCheck ? "disabled" : "normal"
+            }
+          >
+            {isStartingCheck ? "Starting…" : "Start de check"}
+          </ComplianceCheckButton>
+          {lastCheckId && (
+            <span className="text-gray-500">
+              Last Check ID: <strong>{lastCheckId}</strong>
+            </span>
+          )}
+        </div>
       </div>
 
       {checkIds && checkIds.length > 0 && (
-        <div className="border-t border-gray-200 pt-3 flex flex-col gap-2">
+        <div className="pt-3 flex flex-col gap-2">
           <strong>Check Progress</strong>
           <div className="flex gap-2 items-center flex-wrap">
             <select
@@ -374,6 +376,7 @@ export default function ChecksPage() {
             <ProgressBarPolling
               checkId={progressCheckId}
               onComplete={handleUpdateProgressResult}
+              className="max-w-[400px]"
             />
           )}
 
