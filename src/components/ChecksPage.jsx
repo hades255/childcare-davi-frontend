@@ -7,7 +7,7 @@ import {
   getCheckIds,
 } from "../services/api";
 import { useChecks } from "../contexts/ChecksContext";
-import { formatDate } from "../helpers/date";
+import { datesBetween } from "../helpers/date";
 import { isFormatNeedFile } from "../helpers/file";
 import CheckResults from "./ui/CheckResults";
 import FileUploadCard from "./ui/FileUploadCard";
@@ -114,19 +114,22 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
   );
 });
 
-const DateInput = memo(function DateInput({ date, onChange }) {
+const DateInput = memo(function DateInput({ title, date, onChange }) {
   const handleChange = (e) => {
     onChange(e.target.value);
   };
 
   return (
-    <input
-      type="date"
-      id="dateInput"
-      value={date}
-      onChange={handleChange}
-      className="border-b border-gray-300 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
-    />
+    <div className="flex gap-2 items-center">
+      {title && <span className="text-sm">{title}</span>}
+      <input
+        type="date"
+        id="dateInput"
+        value={date}
+        onChange={handleChange}
+        className="border-b border-gray-300 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
+      />
+    </div>
   );
 });
 
@@ -152,6 +155,7 @@ export default function ChecksPage() {
   const [enableVgc, setEnableVgc] = useState(false);
   const [enableThreeHours, setEnableThreeHours] = useState(false);
   const [checkDate, setCheckDate] = useState("");
+  const [checkToDate, setCheckToDate] = useState("");
 
   const requiredVisibleKinds = useMemo(() => {
     const kinds = new Set([FileKind.STAFF_PLANNING, FileKind.CHILD_PLANNING]);
@@ -178,6 +182,13 @@ export default function ChecksPage() {
     if (enableVgc && !hasVgc) missing.push("vgc_list");
     if (enableThreeHours && !hasReg) missing.push("child-registration");
     if (!checkDate) missing.push("Checking date");
+    if (!checkToDate) missing.push("Checking date");
+
+    const date1 = new Date(checkDate);
+    const date2 = new Date(checkToDate);
+    if (date1 > date2) {
+      missing.push("Check from and to date again.");
+    }
 
     return {
       hasStaff,
@@ -190,12 +201,18 @@ export default function ChecksPage() {
         hasChildPlan &&
         (!enableVgc || hasVgc) &&
         (!enableThreeHours || hasReg) &&
-        checkDate,
+        checkDate &&
+        checkToDate &&
+        date1 <= date2,
     };
-  }, [fileMap, enableVgc, enableThreeHours, checkDate]);
+  }, [fileMap, enableVgc, enableThreeHours, checkDate, checkToDate]);
 
   const handleDateChange = useCallback(function handleDateChange(value) {
     setCheckDate(value);
+  });
+
+  const handleToDateChange = useCallback(function handleDateChange(value) {
+    setCheckToDate(value);
   });
 
   async function handleStartCheck() {
@@ -208,7 +225,6 @@ export default function ChecksPage() {
     if (enableVgc) modules.push("vgc");
     if (enableThreeHours) modules.push("threeHours");
 
-    // Additional validation per selected module
     if (enableVgc && !fileMap[FileKind.VGC_LIST]) {
       alert("Please upload VGC list (JSON) to run VGC.");
       return;
@@ -218,7 +234,6 @@ export default function ChecksPage() {
       return;
     }
 
-    // Collect document keys from uploaded files relevant to selected modules
     const documentKeys = [
       fileMap[FileKind.STAFF_PLANNING],
       fileMap[FileKind.CHILD_PLANNING],
@@ -227,7 +242,7 @@ export default function ChecksPage() {
     ];
 
     const source = "flexkids";
-    const date = formatDate(checkDate);
+    const date = datesBetween(checkDate, checkToDate);
     try {
       setIsStartingCheck(true);
       const res = await startCheck({
@@ -319,8 +334,17 @@ export default function ChecksPage() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <div>
-          <DateInput date={checkDate} onChange={handleDateChange} />
+        <div className="flex gap-4 items-center">
+          <DateInput
+            title={"From"}
+            date={checkDate}
+            onChange={handleDateChange}
+          />
+          <DateInput
+            title={"To"}
+            date={checkToDate}
+            onChange={handleToDateChange}
+          />
         </div>
         <div className="flex gap-2 items-center">
           <ComplianceCheckButton

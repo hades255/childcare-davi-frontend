@@ -22,7 +22,7 @@ export default function ComplianceCheckButton({
     normal: "bg-[#23BD92] text-white hover:bg-green-400",
     uploading: "bg-[#CFE4FF] text-[#4C9AFF] hover:bg-blue-300",
     uploaded: "bg-[#D6F5EB] text-[#23BD92] hover:bg-green-300",
-    disabled: "bg-[#BDEBDF] text-white hover:bg-green-400",
+    disabled: "bg-[#9DCBBF] text-white hover:bg-green-400",
     remove: "bg-[#F4A7A7] text-white hover:bg-red-400",
   };
   const cls = `${base} ${sizes[size] ?? sizes.md} ${

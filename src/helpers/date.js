@@ -1,32 +1,25 @@
 export const formatDate = (dateString) => {
   if (!dateString) return "";
 
-  // Try to parse the date string in a safe way
   let dateObj;
 
-  // If input is already a Date object, use it directly
   if (dateString instanceof Date) {
     dateObj = dateString;
   } else {
-    // Try to normalize separators to ISO format
-    const normalized = dateString
-      .replace(/\./g, "-")  // replace dots with dashes
-      .replace(/\//g, "-"); // replace slashes with dashes
+    const normalized = dateString.replace(/\./g, "-").replace(/\//g, "-");
 
-    // If format is DD-MM-YYYY, convert to YYYY-MM-DD for parsing
     const parts = normalized.split("-");
     if (parts.length === 3 && parts[0].length === 2 && parts[2].length === 4) {
-      // Assume DD-MM-YYYY and reformat to YYYY-MM-DD
       dateObj = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
     } else {
       dateObj = new Date(normalized);
     }
   }
 
-  if (isNaN(dateObj)) return ""; // invalid date
+  if (isNaN(dateObj)) return "";
 
   let day = dateObj.getDate();
-  let month = dateObj.getMonth() + 1; // Months are 0-indexed
+  let month = dateObj.getMonth() + 1;
   const year = dateObj.getFullYear();
 
   day = day < 10 ? "0" + day : day;
@@ -34,3 +27,25 @@ export const formatDate = (dateString) => {
 
   return `${day}-${month}-${year}`;
 };
+
+export function datesBetween(from, to) {
+  if (!from || !to) return [];
+  const a = new Date(from);
+  const b = new Date(to);
+  if (isNaN(a) || isNaN(b) || a > b) return [];
+
+  let start = new Date(
+    Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), a.getUTCDate())
+  );
+  let end = new Date(
+    Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), b.getUTCDate())
+  );
+  if (start > end) [start, end] = [end, start];
+
+  const out = [];
+  while (start <= end) {
+    out.push(formatDate(start));
+    start.setUTCDate(start.getUTCDate() + 1);
+  }
+  return out;
+}
