@@ -168,7 +168,7 @@ const ResultTable = ({ resultData, modules }) => {
                 </td>
               )}
               <td className="border border-gray-300 px-3 py-1">
-                {slice.Details}
+                {slice.Details.join(". ")}
               </td>
             </tr>
           ))}
