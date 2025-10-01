@@ -121,7 +121,7 @@ export default function DownloadDropdownButton({ day, days, data }) {
                 </button>
               </>
             )}
-            {days && days.length > 0 && (
+            {days && days.length > 1 && (
               <>
                 <p className="block w-full text-right px-4 border-b text-xs text-gray-500">
                   Download all
