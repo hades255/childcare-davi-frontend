@@ -49,3 +49,11 @@ export function datesBetween(from, to) {
   }
   return out;
 }
+
+export function toLocaleDateString(input) {
+  if (!input) return "";
+  const [day, month, year] = input.split("-");
+
+  const dateObj = new Date(`${year}-${month}-${day}`);
+  return dateObj.toLocaleDateString();
+}
