@@ -18,13 +18,15 @@ const Checkbox = memo(function Checkbox({
   readOnly,
 }) {
   return (
-    <Toggle
-      label={label}
-      checked={checked}
-      onChange={onChange}
-      disabled={disabled}
-      readOnly={readOnly}
-    />
+    <div>
+      <Toggle
+        label={label}
+        checked={checked}
+        onChange={onChange}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+    </div>
   );
 });
 

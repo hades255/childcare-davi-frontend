@@ -28,7 +28,7 @@ export default function Toggle({
           }`}
         />
       </span>
-      <span className="text-gray-800">{label}</span>
+      <span className="text-gray-800 text-sm">{label}</span>
     </label>
   );
 }
