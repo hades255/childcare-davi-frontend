@@ -379,7 +379,9 @@ export default function ChecksPage() {
             />
           )}
 
-          {progressResult && <CheckResults data={progressResult} />}
+          {progressCheckId && progressResult && (
+            <CheckResults data={progressResult} />
+          )}
         </div>
       )}
     </div>

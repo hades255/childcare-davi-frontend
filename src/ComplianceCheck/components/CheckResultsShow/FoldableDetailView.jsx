@@ -1,13 +1,26 @@
-import React, { useRef, useState } from "react";
-export default function FoldableDetailView({ children }) {
+import React, { useCallback, useRef, useState } from "react";
+export default function FoldableDetailView({ goBottom, children }) {
   const [open, setOpen] = useState(false);
   const contentRef = useRef(null);
+
+  const handleSetOpen = useCallback(() => {
+    const preOpen = open;
+    setOpen(!open);
+    if (!preOpen) {
+      const timer = setTimeout(() => {
+        goBottom();
+      }, 500);
+      return () => {
+        if (timer) clearTimeout(timer);
+      };
+    }
+  }, [open, goBottom]);
 
   return (
     <div className="w-full shadow">
       <div className="w-full">
         <button
-          onClick={() => setOpen(!open)}
+          onClick={handleSetOpen}
           className="flex justify-between items-center px-4 py-1 gap-1 hover:underline"
         >
           <svg

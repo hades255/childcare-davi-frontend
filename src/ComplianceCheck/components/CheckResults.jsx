@@ -1,12 +1,29 @@
+import { useEffect, useRef } from "react";
 import { toLocaleDateString } from "../helpers/date";
 import ComplianceDetailView from "./CheckResultsShow/ComplianceDetailView";
 import FoldableDetailView from "./CheckResultsShow/FoldableDetailView";
 import ResultTable from "./CheckResultsShow/ResultTable";
 
 const CheckResults = ({ data }) => {
+  const bottomRef = useRef(null);
+
   const days = data.date;
   const modules = data.modules;
   const resultData = data.result;
+
+  function goBottom() {
+    if (bottomRef && bottomRef.current) {
+      bottomRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+      bottomRef.current.focus();
+    }
+  }
+
+  useEffect(() => {
+    goBottom();
+  }, [data]);
 
   return (
     <>
@@ -39,7 +56,7 @@ const CheckResults = ({ data }) => {
           )}
         </div>
 
-        <FoldableDetailView>
+        <FoldableDetailView goBottom={goBottom}>
           <div className="flex flex-col gap-2 mb-4">
             <h3 className="font-semibold text-lg">Summary</h3>
             <p>{data.summary}</p>
@@ -63,6 +80,8 @@ const CheckResults = ({ data }) => {
 
           <ResultTable resultData={resultData} modules={modules} days={days} />
         </FoldableDetailView>
+
+        <div ref={bottomRef} />
       </div>
     </>
   );
