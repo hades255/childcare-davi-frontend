@@ -121,27 +121,31 @@ export default function DownloadDropdownButton({ day, days, data }) {
                 </button>
               </>
             )}
-            <p className="block w-full text-right px-4 border-b text-xs text-gray-500">
-              Download all
-            </p>
-            <button
-              onClick={handleClickCSVAll}
-              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-            >
-              Download to EXCEL
-            </button>
-            <button
-              onClick={handleClickJSONAll}
-              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-            >
-              Download to JSON
-            </button>
-            <button
-              onClick={handleClickPDFAll}
-              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-            >
-              Download to PDF
-            </button>
+            {days && days.length > 0 && (
+              <>
+                <p className="block w-full text-right px-4 border-b text-xs text-gray-500">
+                  Download all
+                </p>
+                <button
+                  onClick={handleClickCSVAll}
+                  className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                >
+                  Download to EXCEL
+                </button>
+                <button
+                  onClick={handleClickJSONAll}
+                  className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                >
+                  Download to JSON
+                </button>
+                <button
+                  onClick={handleClickPDFAll}
+                  className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                >
+                  Download to PDF
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
