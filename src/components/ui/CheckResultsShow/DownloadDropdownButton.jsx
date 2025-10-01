@@ -1,11 +1,14 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
 
 import Button from "../Button";
 import { toLocaleDateString } from "../../../helpers/date";
+import {
+  download2CSV,
+  downloadBlob,
+  downloadPDF,
+} from "../../../helpers/download";
 
-export default function DownloadDropdownButton({ day, data, modules }) {
+export default function DownloadDropdownButton({ day, days, data }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -20,106 +23,49 @@ export default function DownloadDropdownButton({ day, data, modules }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  function downloadBlob(content, mime, filename) {
-    const blob = new Blob([content], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = Object.assign(document.createElement("a"), {
-      href: url,
-      download: filename,
-    });
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  /* ---------- CSV ---------- */
-  function toCSV(rows, columns) {
-    if (!rows || !rows.length) return "";
-
-    const cols =
-      columns && columns.length
-        ? columns
-        : rows.reduce((acc, r) => {
-            Object.keys(r).forEach((k) => {
-              if (!acc.includes(k)) acc.push(k);
-            });
-            return acc;
-          }, []);
-
-    const escapeCell = (val) => {
-      let s =
-        val == null
-          ? ""
-          : Array.isArray(val)
-          ? val.join(", ")
-          : typeof val === "object"
-          ? JSON.stringify(val)
-          : String(val);
-      s = s.replace(/"/g, '""');
-      if (/[",\n]/.test(s)) s = `"${s}"`;
-      return s;
-    };
-
-    const header = cols.map(escapeCell).join(",");
-    const body = rows
-      .map((r) => cols.map((c) => escapeCell(r[c])).join(","))
-      .join("\n");
-    return header + "\n" + body;
-  }
   const handleClickCSV = useCallback(() => {
-    const rows = data[1].slices;
-    const day = data[1].day;
-    const columns = Object.keys(rows[0]);
-    const csv = toCSV(rows, columns);
-    downloadBlob(csv, "text/csv;charset=utf-8", `${day}.csv`);
-  }, [data, modules]);
+    const dData = data.find((item) => item.day === day);
+    if (dData) {
+      download2CSV(day, [dData]);
+    } else {
+      alert("Select date first");
+    }
+  }, [day, data]);
 
   const handleClickJSON = useCallback(() => {
-    const day = data[1].day;
-    const json = JSON.stringify(data, null, 2);
-    downloadBlob(json, "application/json;charset=utf-8", `${day}.json`);
-  }, [data]);
+    const dData = data.find((item) => item.day === day);
+    if (dData) {
+      const json = JSON.stringify(dData, null, 2);
+      downloadBlob(json, "application/json;charset=utf-8", `${day}.json`);
+    } else {
+      alert("Select date first");
+    }
+  }, [day, data]);
 
   const handleClickPDF = useCallback(() => {
-    const rows = data[1].slices;
-    const day = data[1].day;
-    const title = `Compliance check ${day}`;
-
-    if (!rows || !rows.length) {
-      alert("No data to export");
-      return;
+    const dData = data.find((item) => item.day === day);
+    if (dData) {
+      downloadPDF(day, [dData]);
+    } else {
+      alert("Select date first");
     }
+  }, [day, data]);
 
-    const columns = Object.keys(rows[0]);
-    const body = rows.map((r) =>
-      columns.map((c) => {
-        const v = r[c];
-        if (v == null) return "";
-        if (Array.isArray(v)) return v.join(", ");
-        if (typeof v === "object") return JSON.stringify(v);
-        return String(v);
-      })
-    );
+  const handleClickCSVAll = useCallback(() => {
+    const dayStr = days[0] + (days.length !== 1 && `_${days[days.length - 1]}`);
+    download2CSV(dayStr, data);
+  }, [days, data]);
 
-    const doc = new jsPDF({ unit: "pt", format: "a4" });
-    const margin = 40;
+  const handleClickJSONAll = useCallback(() => {
+    const dayStr = days[0] + (days.length !== 1 && `_${days[days.length - 1]}`);
+    const json = JSON.stringify(data, null, 2);
+    downloadBlob(json, "application/json;charset=utf-8", `${dayStr}.json`);
+  }, [days, data]);
 
-    doc.setFontSize(14);
-    doc.text(title, margin, margin);
-
-    autoTable(doc, {
-      startY: margin + 10,
-      head: [columns],
-      body,
-      styles: { fontSize: 9, cellPadding: 6 },
-      headStyles: { fillColor: [66, 66, 66] },
-      margin: { left: margin, right: margin },
-      tableWidth: "auto",
-    });
-
-    doc.save(`${day}.pdf`);
-  }, []);
+  const handleClickPDFAll = useCallback(() => {
+    const dayStr = days[0] + (days.length !== 1 && `_${days[days.length - 1]}`);
+    downloadPDF(dayStr, data);
+  }, [days, data]);
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
@@ -159,7 +105,7 @@ export default function DownloadDropdownButton({ day, data, modules }) {
                   onClick={handleClickCSV}
                   className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
                 >
-                  Download to CSV
+                  Download to EXCEL
                 </button>
                 <button
                   onClick={handleClickJSON}
@@ -179,19 +125,19 @@ export default function DownloadDropdownButton({ day, data, modules }) {
               Download all
             </p>
             <button
-              onClick={handleClickCSV}
+              onClick={handleClickCSVAll}
               className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
             >
-              Download to CSV
+              Download to EXCEL
             </button>
             <button
-              onClick={handleClickJSON}
+              onClick={handleClickJSONAll}
               className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
             >
               Download to JSON
             </button>
             <button
-              onClick={handleClickPDF}
+              onClick={handleClickPDFAll}
               className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
             >
               Download to PDF

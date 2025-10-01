@@ -35,8 +35,8 @@ export default function ResultTable({ days, resultData, modules }) {
         </div>
         <DownloadDropdownButton
           data={resultData}
-          modules={modules}
           day={selectedDate}
+          days={days}
         />
       </div>
       <div className="overflow-x-auto h-[60vh] max-h-[60vh] overflow-y-scroll border">
