@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toLocaleDateString } from "../../../helpers/date";
 import DownloadDropdownButton from "./DownloadDropdownButton";
 
@@ -9,10 +9,15 @@ export default function ResultTable({ days, resultData, modules }) {
     setSelectedDate(value);
   }, []);
 
-  if (!resultData || resultData.length === 0 || !resultData[0].slices)
-    return <></>;
   const checkVGC = modules.includes("vgc");
   const checkThreeHours = modules.includes("threeHours");
+
+  useEffect(() => {
+    setSelectedDate(days[0]);
+  }, [days]);
+
+  if (!resultData || resultData.length === 0 || !resultData[0].slices)
+    return <></>;
 
   return (
     <>
