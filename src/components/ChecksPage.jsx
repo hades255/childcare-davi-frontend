@@ -1,17 +1,10 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import {
-  FileKind,
-  uploadFile,
-  startCheck,
-  getCheckProgress,
-  getCheckIds,
-} from "../services/api";
+import { FileKind, uploadFile, startCheck, getCheckIds } from "../services/api";
 import { useChecks } from "../contexts/ChecksContext";
 import { datesBetween } from "../helpers/date";
 import { isFormatNeedFile } from "../helpers/file";
 import CheckResults from "./ui/CheckResults";
 import FileUploadCard from "./ui/FileUploadCard";
-import Button from "./ui/Button";
 import Toggle from "./ui/Toggle";
 import FileItem from "./ui/FileItem";
 import ComplianceCheckButton from "./ui/ComplianceCheckButton";
@@ -265,21 +258,6 @@ export default function ChecksPage() {
     }
   }
 
-  async function handleGetProgress() {
-    const _checkId = progressCheckId;
-    if (!_checkId) {
-      alert("Please enter a check id.");
-      return;
-    }
-    try {
-      const res = await getCheckProgress(_checkId);
-      setProgressResult(res);
-    } catch (e) {
-      console.error(e);
-      alert(e.message || "Failed to get progress");
-    }
-  }
-
   function handleUpdateProgressResult(res) {
     setProgressResult(res);
   }
@@ -389,13 +367,6 @@ export default function ChecksPage() {
                 </option>
               ))}
             </select>
-            <Button
-              onClick={handleGetProgress}
-              variant="secondary"
-              icon="refresh-cw"
-            >
-              Get Progress
-            </Button>
           </div>
 
           {progressCheckId && (
