@@ -181,13 +181,16 @@ export default function ChecksPage() {
     if (!hasChildPlan) missing.push("child-planning");
     if (enableVgc && !hasVgc) missing.push("vgc_list");
     if (enableThreeHours && !hasReg) missing.push("child-registration");
-    if (!checkDate) missing.push("Checking date");
-    if (!checkToDate) missing.push("Checking date");
+    if (!checkDate && !checkToDate) missing.push("Checking date");
 
-    const date1 = new Date(checkDate);
-    const date2 = new Date(checkToDate);
-    if (date1 > date2) {
-      missing.push("Check from and to date again.");
+    let date1 = null;
+    let date2 = null;
+    if (checkDate && checkToDate) {
+      date1 = new Date(checkDate);
+      date2 = new Date(checkToDate);
+      if (date1 > date2) {
+        missing.push("Check from and to date again.");
+      }
     }
 
     return {
@@ -201,9 +204,8 @@ export default function ChecksPage() {
         hasChildPlan &&
         (!enableVgc || hasVgc) &&
         (!enableThreeHours || hasReg) &&
-        checkDate &&
-        checkToDate &&
-        date1 <= date2,
+        (checkDate || checkToDate) &&
+        (date1 && date2 ? date1 <= date2 : true),
     };
   }, [fileMap, enableVgc, enableThreeHours, checkDate, checkToDate]);
 
