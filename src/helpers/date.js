@@ -29,7 +29,9 @@ export const formatDate = (dateString) => {
 };
 
 export function datesBetween(from, to) {
-  if (!from || !to) return [];
+  if (!from && !to) return [];
+  if (!from) from = to;
+  if (!to) to = from;
   const a = new Date(from);
   const b = new Date(to);
   if (isNaN(a) || isNaN(b) || a > b) return [];
