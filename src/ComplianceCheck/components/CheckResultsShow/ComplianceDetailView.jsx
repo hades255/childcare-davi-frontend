@@ -1,4 +1,4 @@
-import { toLocaleDateString } from "../../../helpers/date";
+import { toLocaleDateString } from "../../helpers/date";
 import Icon from "../Icon";
 
 function toMin(t) {

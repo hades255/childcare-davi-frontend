@@ -1,14 +1,14 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { FileKind, uploadFile, startCheck, getCheckIds } from "../services/api";
-import { useChecks } from "../contexts/ChecksContext";
-import { datesBetween } from "../helpers/date";
-import { isFormatNeedFile } from "../helpers/file";
-import CheckResults from "./ui/CheckResults";
-import FileUploadCard from "./ui/FileUploadCard";
-import Toggle from "./ui/Toggle";
-import FileItem from "./ui/FileItem";
-import ComplianceCheckButton from "./ui/ComplianceCheckButton";
-import ProgressBarPolling from "./ui/ProgressBarPolling";
+import { FileKind, uploadFile, startCheck, getCheckIds } from "./services/api";
+import { useChecks } from "./contexts/ChecksContext";
+import { datesBetween } from "./helpers/date";
+import { isFormatNeedFile } from "./helpers/file";
+import CheckResults from "./components/CheckResults";
+import FileUploadCard from "./components/FileUploadCard";
+import Toggle from "./components/Toggle";
+import FileItem from "./components/FileItem";
+import ComplianceCheckButton from "./components/ComplianceCheckButton";
+import ProgressBarPolling from "./components/ProgressBarPolling";
 
 const Checkbox = memo(function Checkbox({
   label,

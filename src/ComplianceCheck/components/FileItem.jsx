@@ -1,6 +1,6 @@
 import ModalImage from "react-modal-image";
-import { useChecks } from "../../contexts/ChecksContext";
-import { getFileDownloadUrl, getFileStatus } from "../../services/api";
+import { useChecks } from "../contexts/ChecksContext";
+import { getFileDownloadUrl, getFileStatus } from "../services/api";
 import Button from "./Button";
 
 export default function FileItem({ kind, file }) {

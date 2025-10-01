@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getFirstImageOfDoc } from "../../services/api";
+import { getFirstImageOfDoc } from "../services/api";
 
 export default function DocxFirstImage({ fileKey }) {
   const [filename, setFilename] = useState("Child-Planning.docx");

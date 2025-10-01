@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getCheckProgress } from "../../services/api";
+import { getCheckProgress } from "../services/api";
 import clsx from "clsx";
 
 export default function ProgressBarPolling({

@@ -1,13 +1,10 @@
-import ChecksPage from "./components/ChecksPage";
-import { ChecksProvider } from "./contexts/ChecksContext";
+import ComplianceCheck from "./ComplianceCheck/ComplianceCheck";
 
 function App() {
   return (
-    <ChecksProvider>
-      <div className="flex justify-center">
-        <ChecksPage />
-      </div>
-    </ChecksProvider>
+    <div className="flex justify-center">
+      <ComplianceCheck />
+    </div>
   );
 }
 

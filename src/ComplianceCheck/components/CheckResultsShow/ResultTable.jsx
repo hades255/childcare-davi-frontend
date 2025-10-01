@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { toLocaleDateString } from "../../../helpers/date";
+import { toLocaleDateString } from "../../helpers/date";
 import DownloadDropdownButton from "./DownloadDropdownButton";
 
 export default function ResultTable({ days, resultData, modules }) {

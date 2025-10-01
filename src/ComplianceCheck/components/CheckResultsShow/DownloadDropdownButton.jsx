@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 
 import Button from "../Button";
-import { toLocaleDateString } from "../../../helpers/date";
+import { toLocaleDateString } from "../../helpers/date";
 import {
   download2CSV,
   downloadBlob,
   downloadPDF,
-} from "../../../helpers/download";
+} from "../../helpers/download";
 
 export default function DownloadDropdownButton({ day, days, data }) {
   const [open, setOpen] = useState(false);

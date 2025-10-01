@@ -1,8 +1,7 @@
-import { toLocaleDateString } from "../../helpers/date";
+import { toLocaleDateString } from "../helpers/date";
 import ComplianceDetailView from "./CheckResultsShow/ComplianceDetailView";
 import FoldableDetailView from "./CheckResultsShow/FoldableDetailView";
 import ResultTable from "./CheckResultsShow/ResultTable";
-import SummaryView from "./CheckResultsShow/SummaryView";
 
 const CheckResults = ({ data }) => {
   const days = data.date;

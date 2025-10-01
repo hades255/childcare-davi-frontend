@@ -6,9 +6,9 @@ import {
   getFileDownloadUrl,
   getFileStatus,
   getModuleDocuments,
-} from "../../services/api";
-import { useChecks } from "../../contexts/ChecksContext";
-import { getKeyFromFileName } from "../../helpers/file";
+} from "../services/api";
+import { useChecks } from "../contexts/ChecksContext";
+import { getKeyFromFileName } from "../helpers/file";
 import Button from "./Button";
 import Icon from "./Icon";
 import FileFormatModal from "./FileFormatModal";
