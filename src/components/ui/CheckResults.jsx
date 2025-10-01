@@ -30,8 +30,8 @@ const CheckResults = ({ data }) => {
                 key={index}
                 checkResult={item}
                 modules={modules}
-                groupName="Dolfijntjes"
-                groupType="Baby Group"
+                groupName="KDV RI Vrolijke Verkenners"
+                groupType="Group"
                 bkrDailyLimitHours={3}
               />
             ))
