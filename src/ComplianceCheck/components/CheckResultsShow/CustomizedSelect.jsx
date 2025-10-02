@@ -182,7 +182,7 @@ export default function CustomizedSelect({
         >
           <div className="p-2 border-b bg-gray-50">
             <label className="sr-only" htmlFor="tls-search">
-              Search
+              Zoekopdracht
             </label>
             <input
               id="tls-search"
@@ -192,14 +192,14 @@ export default function CustomizedSelect({
                 setQuery(e.target.value);
                 setActiveIndex(0);
               }}
-              placeholder="Search…"
+              placeholder="Zoekopdracht..."
               className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           <ul className="max-h-72 overflow-auto py-1" tabIndex={-1}>
             {filtered.length === 0 && (
-              <li className="px-3 py-3 text-gray-500">No results</li>
+              <li className="px-3 py-3 text-gray-500">Geen resultaten</li>
             )}
             {filtered.map((o, idx) => (
               <li
@@ -238,7 +238,7 @@ export default function CustomizedSelect({
                 <div className="flex justify-between">
                   <span
                     className="truncate text-gray-500 text-xs hover:rounded hover:bg-green-200 transition-all"
-                    title="Click to copy check ID"
+                    title="Klik om de cheque-ID te kopiëren"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();

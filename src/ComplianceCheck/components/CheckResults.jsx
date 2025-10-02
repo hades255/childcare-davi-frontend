@@ -58,7 +58,7 @@ const CheckResults = ({ data }) => {
 
         <FoldableDetailView goBottom={goBottom}>
           <div className="flex flex-col gap-2 mb-4">
-            <h3 className="font-semibold text-lg">Summary</h3>
+            <h3 className="font-semibold text-lg">Samenvatting</h3>
             <p>{data.summary}</p>
             {days && days.length > 0 && (
               <span className="">
@@ -68,7 +68,7 @@ const CheckResults = ({ data }) => {
               </span>
             )}
             <div>
-              <p>Files</p>
+              <p>Bestanden</p>
               {data.references.flat().map((item, index) => (
                 <p key={index} className="pl-2 text-sm">
                   {item.substring(9)}

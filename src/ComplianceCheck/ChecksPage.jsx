@@ -294,14 +294,14 @@ export default function ChecksPage() {
             onChange={() => setEnableVgc((v) => !v)}
           />
           <Checkbox
-            label="3-3-uursregeling"
+            label="3-uurs regeling"
             checked={enableThreeHours}
             onChange={() => setEnableThreeHours((v) => !v)}
           />
         </div>
 
         <p className="mt-6 text-gray-800">
-          Om deze check te doen, heb ik de volgende documenten nodig:
+          Om did te doen, zijn de volgende documenten nodig.
         </p>
 
         <div className="grid grid-cols-1 gap-2">
@@ -316,12 +316,12 @@ export default function ChecksPage() {
         <div className="flex flex-col gap-2">
           <div className="flex gap-4 items-center">
             <DateInput
-              title={"From"}
+              title={"Van"}
               date={checkDate}
               onChange={handleDateChange}
             />
             <DateInput
-              title={"To"}
+              title={"Tot"}
               date={checkToDate}
               onChange={handleToDateChange}
             />
@@ -333,7 +333,7 @@ export default function ChecksPage() {
               icon={isStartingCheck ? "loader-2" : "play"}
               title={
                 !validation.canStart && validation.missing.length
-                  ? `Missing: ${validation.missing.join(", ")}`
+                  ? `Vermist: ${validation.missing.join(", ")}`
                   : undefined
               }
               variant={
@@ -348,7 +348,7 @@ export default function ChecksPage() {
 
       {checkList && checkList.length > 0 && (
         <div className="pt-3 flex flex-col gap-2">
-          <strong>Check Progress</strong>
+          <strong>Geschiedenis</strong>
           <div className="flex gap-2 items-center flex-wrap">
             <CustomizedSelect
               options={checkList}
