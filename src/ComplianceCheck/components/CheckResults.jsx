@@ -75,7 +75,6 @@ const CheckResults = ({ data }) => {
                 </p>
               ))}
             </div>
-            {/* <SummaryView result={resultData} modules={modules} /> */}
           </div>
 
           <ResultTable resultData={resultData} modules={modules} days={days} />

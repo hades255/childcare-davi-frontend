@@ -107,6 +107,12 @@ export async function getCheckIds() {
   });
 }
 
+export async function getCheckList() {
+  return request(`/checks/list`, {
+    method: "GET",
+  });
+}
+
 export async function getModuleDocuments(module) {
   return request(`/requirements?modules=${encodeURIComponent(module)}`, {
     method: "GET",
