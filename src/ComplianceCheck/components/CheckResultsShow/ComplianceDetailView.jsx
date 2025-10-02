@@ -80,9 +80,8 @@ function recommendStaffFromDetails(slices) {
 export default function ComplianceDetailView({
   checkResult,
   modules,
-  groupName, // optional: "Dolfijntjes"
-  groupType = "Group", // optional: "Baby Group"
-  showUnknownNote = true, // show note about Unknown slots for VGC
+  groupName,
+  showUnknownNote = true,
 }) {
   const dateStr = checkResult?.day || "";
   const slices = checkResult?.slices || [];
@@ -91,9 +90,6 @@ export default function ComplianceDetailView({
   const checkVGC = modules.includes("vgc");
   const checkThreeHours = modules.includes("threeHours");
 
-  const groupLabel = groupName ? `${groupType} "${groupName}"` : groupType;
-
-  // Module computations
   const bkr = mergeFailRanges(slices, "BKR");
   const vgc = mergeFailRanges(slices, "VGC");
   const bkrPassSlots = countPassedBKR(slices);
@@ -101,7 +97,6 @@ export default function ComplianceDetailView({
   const vgcUnknownSlots = countUnknownVgc(slices);
   const vgcRec = recommendStaffFromDetails(slices);
 
-  // 3-UURS block straight from summary
   const threeFlag = three["3-UURS"];
   const threeReason = three.Reason;
   const threeDevs = Array.isArray(three.Deviations) ? three.Deviations : [];
@@ -112,10 +107,9 @@ export default function ComplianceDetailView({
       className="border rounded shadow-lg p-2 flex flex-col gap-2"
     >
       <div className="font-bold mb-2 pl-2 border-b">
-        {toLocaleDateString(dateStr)} — {groupLabel}
+        {toLocaleDateString(dateStr)} — {groupName}
       </div>
 
-      {/* BKR */}
       <section>
         <div className="font-bold pl-2">BKR</div>
         {emptyDay ? (
@@ -145,7 +139,6 @@ export default function ComplianceDetailView({
         )}
       </section>
 
-      {/* VGC */}
       {checkVGC && (
         <section>
           <div className="font-bold pl-2">VGC</div>
@@ -186,7 +179,6 @@ export default function ComplianceDetailView({
         </section>
       )}
 
-      {/* 3-UURS */}
       {checkThreeHours && (
         <section>
           <div className="font-bold pl-2">3-UURS</div>

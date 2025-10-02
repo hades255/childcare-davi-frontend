@@ -10,6 +10,7 @@ const CheckResults = ({ data }) => {
   const days = data.date;
   const modules = data.modules;
   const resultData = data.result;
+  const groupName = data.group;
 
   function goBottom() {
     if (bottomRef && bottomRef.current) {
@@ -46,8 +47,7 @@ const CheckResults = ({ data }) => {
                 key={index}
                 checkResult={item}
                 modules={modules}
-                groupName="KDV RI Vrolijke Verkenners"
-                groupType="Group"
+                groupName={groupName}
                 bkrDailyLimitHours={3}
               />
             ))
