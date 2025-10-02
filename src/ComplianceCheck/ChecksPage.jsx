@@ -301,7 +301,7 @@ export default function ChecksPage() {
         </div>
 
         <p className="mt-6 text-gray-800">
-          Om did te doen, zijn de volgende documenten nodig.
+          Om dit te doen zijn de volgende documenten nodig
         </p>
 
         <div className="grid grid-cols-1 gap-2">
