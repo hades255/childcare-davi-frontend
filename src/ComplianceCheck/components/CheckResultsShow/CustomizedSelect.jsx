@@ -32,7 +32,9 @@ export default function CustomizedSelect({
     if (!query) return updatedOptions;
     const q = query.toLowerCase();
     return updatedOptions.filter((o) =>
-      JSON.stringify([o.date, o.modules, o.group]).toLowerCase().includes(q)
+      JSON.stringify([o.check_id, o.date, o.modules, o.group])
+        .toLowerCase()
+        .includes(q)
     );
   }, [query, updatedOptions]);
 
