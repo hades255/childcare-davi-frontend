@@ -26,11 +26,11 @@ async function request(path, options = {}) {
     }
     return response.text();
   } catch (error) {
-    console.error("API Request failed:", error);
+    console.error("API-aanvraag mislukt:", error);
     alert(
       error.message.includes("Failed to fetch")
-        ? "Network error: Unable to connect to server. Please check your internet connection."
-        : `Error: ${error.message}`
+        ? "Netwerkfout: Kan geen verbinding maken met de server. Controleer uw internetverbinding."
+        : `Fout: ${error.message}`
     );
     throw error;
   }

@@ -12,7 +12,7 @@ function minToStr(mins) {
   return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
 }
 function mergeFailRanges(slices, key /* "BKR" | "VGC" */) {
-  const failing = (slices || []).filter((s) => s && s[key] === "No");
+  const failing = (slices || []).filter((s) => s && s[key] === "Nee");
   if (!failing.length) return { ranges: [], totalFailMins: 0, slots: 0 };
 
   failing.sort((a, b) => toMin(a["From Time"]) - toMin(b["From Time"]));

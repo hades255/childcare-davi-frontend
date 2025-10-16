@@ -60,7 +60,7 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
         input.click();
       } catch (e) {
         console.error(e);
-        alert(e.message || "Upload failed");
+        alert(e.message || "Upload mislukt");
       }
     },
     [kind, onAdded]
@@ -253,7 +253,7 @@ export default function ChecksPage() {
       setProgressCheckId(res.check_id);
     } catch (e) {
       console.error(e);
-      alert(e.message || "Failed to start check");
+      alert(e.message || "Controle starten mislukt");
     } finally {
       setIsStartingCheck(false);
     }

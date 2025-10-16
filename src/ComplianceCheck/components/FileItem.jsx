@@ -19,7 +19,7 @@ export default function FileItem({ kind, file }) {
       alert(typeof res === "string" ? res : JSON.stringify(res, null, 2));
     } catch (e) {
       console.error(e);
-      alert(e.message || "Failed to get file status");
+      alert(e.message || "Het is niet gelukt om de bestandsstatus op te halen");
     }
   }
   async function handleDelete() {
@@ -73,7 +73,7 @@ export default function FileItem({ kind, file }) {
           size="xs"
           icon="x"
           onClick={handleRemove}
-          title="Remvoe from check list"
+          title="Verwijderen uit checklist"
           className="bg-yellow-300 text-blue-900 px-4"
         />
       </div>

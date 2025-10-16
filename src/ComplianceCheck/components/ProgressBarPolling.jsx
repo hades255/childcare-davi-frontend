@@ -8,7 +8,7 @@ export default function ProgressBarPolling({
   className = "",
   onComplete,
 }) {
-  const [data, setData] = useState({ status: "Starting…", progress: 0 });
+  const [data, setData] = useState({ status: "Beginnen…", progress: 0 });
   const timeoutRef = useRef(null);
   const abortRef = useRef(null);
 
@@ -49,10 +49,12 @@ export default function ProgressBarPolling({
 
   const pct = typeof data.progress === "number" ? Math.round(data.progress) : 0;
 
-  return (
+  return data.status === "completed" ? (
+    <></>
+  ) : (
     <div className={clsx("space-y-2 w-full", className)} aria-live="polite">
       <div className="text-sm font-medium text-gray-800 capitalize">
-        {data.status ?? "Processing…"}
+        {data.status ?? "Verwerking…"}
       </div>
 
       <div
@@ -60,7 +62,7 @@ export default function ProgressBarPolling({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={pct}
-        aria-label="Progress"
+        aria-label="Voortgang"
         className="relative h-2 w-full rounded-full bg-gray-200 overflow-hidden"
       >
         <div

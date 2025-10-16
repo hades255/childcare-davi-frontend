@@ -7,7 +7,7 @@ export default function CustomizedSelect({
   options,
   value,
   onChange,
-  placeholder = "Select an item…",
+  placeholder = "Selecteer een item…",
   disabled = false,
   className,
 }) {

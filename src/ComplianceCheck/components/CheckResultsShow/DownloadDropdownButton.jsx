@@ -28,7 +28,7 @@ export default function DownloadDropdownButton({ day, days, data }) {
     if (dData) {
       download2CSV(day, [dData]);
     } else {
-      alert("Select date first");
+      alert("Selecteer eerst de datum");
     }
   }, [day, data]);
 
@@ -38,7 +38,7 @@ export default function DownloadDropdownButton({ day, days, data }) {
       const json = JSON.stringify(dData, null, 2);
       downloadBlob(json, "application/json;charset=utf-8", `${day}.json`);
     } else {
-      alert("Select date first");
+      alert("Selecteer eerst de datum");
     }
   }, [day, data]);
 
@@ -47,7 +47,7 @@ export default function DownloadDropdownButton({ day, days, data }) {
     if (dData) {
       downloadPDF(day, [dData]);
     } else {
-      alert("Select date first");
+      alert("Selecteer eerst de datum");
     }
   }, [day, data]);
 

@@ -46,7 +46,7 @@ function safeSheetName(name) {
 
 export const download2CSV = (dateStr, data) => {
   if (!Array.isArray(data) || data.length === 0) {
-    alert("No data");
+    alert("Geen gegevens");
     return;
   }
 
@@ -55,7 +55,7 @@ export const download2CSV = (dateStr, data) => {
   );
 
   if (!allDays.length) {
-    alert("No day slices to export");
+    alert("Geen dagplakken om te exporteren");
     return;
   }
 
@@ -74,7 +74,7 @@ export const download2CSV = (dateStr, data) => {
 
 export const downloadPDF = (dateStr, data) => {
   if (!Array.isArray(data) || data.length === 0) {
-    alert("No data to export");
+    alert("Geen gegevens om te exporteren");
     return;
   }
 
@@ -82,7 +82,7 @@ export const downloadPDF = (dateStr, data) => {
     (d) => d && d.day && Array.isArray(d.slices) && d.slices.length
   );
   if (!days.length) {
-    alert("No day slices to export");
+    alert("Geen dagplakken om te exporteren");
     return;
   }
 
@@ -109,7 +109,7 @@ export const downloadPDF = (dateStr, data) => {
   days.forEach((d, idx) => {
     if (idx > 0) doc.addPage(); // new page per day prevents overlap
 
-    const title = `Compliance check ${d.day}`;
+    const title = `Nalevingscontrole ${d.day}`;
     doc.setFontSize(14);
     doc.text(title, margin, margin);
 
