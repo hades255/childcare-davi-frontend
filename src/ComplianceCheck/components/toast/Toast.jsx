@@ -5,6 +5,7 @@ import CheckIcon from "./CheckIcon";
 import ErrorIcon from "./ErrorIcon";
 import WarnIcon from "./WarnIcon";
 import InfoIcon from "./InfoIcon";
+import Icon from "../Icon";
 
 const typeStyles = {
   success: "text-[#6a0]",
@@ -20,7 +21,7 @@ const typeIcons = {
   info: <InfoIcon width={20} height={20} color={"lightblue"} />,
 };
 
-const Toast = ({ id, message, type, duration = 3000 }) => {
+const Toast = ({ id, message, type, duration = 5000 }) => {
   const { removeToast } = useToast();
   const [isVisible, setIsVisible] = useState(true);
 
@@ -46,8 +47,7 @@ const Toast = ({ id, message, type, duration = 3000 }) => {
   return (
     <div
       className={clsx(
-        `w-60 my-2 px-4 py-2 rounded-none bg-[#fffc] shadow transition-transform`,
-        typeStyles[type],
+        `w-60 my-2 px-4 py-2 rounded bg-[#cecececc] shadow-lg shadow-[#444] transition-transform`,
         {
           "animate-toastIn": isVisible,
           "animate-toastOut": !isVisible,
@@ -57,14 +57,16 @@ const Toast = ({ id, message, type, duration = 3000 }) => {
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <div className="mr-1 mt-[1px]">{typeIcons[type]}</div>
+          <div className={clsx("mr-1 mt-[1px]", typeStyles[type])}>
+            {typeIcons[type]}
+          </div>
           <span className="flex items-center text-xs mr-1">{message}</span>
         </div>
         <span
           className="cursor-pointer text-[#000a] hover:bg-gray-200 rounded-full w-6 h-6 flex justify-center items-center transition-all"
           onClick={handleClose}
         >
-          <Icon name={"x"} size={24} />
+          <Icon name={"x"} size={16} />
         </span>
       </div>
     </div>

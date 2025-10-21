@@ -14,10 +14,8 @@ async function request(path, options = {}) {
     });
 
     if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      const errorMessage = text || `Request failed: ${response.status}`;
-      // alert(`Error: ${errorMessage}`);
-      throw new Error(errorMessage);
+      const errData = await response.json();
+      throw new Error(errData.detail || `Request failed: ${response.status}`);
     }
 
     const contentType = response.headers.get("content-type") || "";
@@ -26,12 +24,7 @@ async function request(path, options = {}) {
     }
     return response.text();
   } catch (error) {
-    console.error("API-aanvraag mislukt:", error);
-    alert(
-      error.message.includes("Failed to fetch")
-        ? "Netwerkfout: Kan geen verbinding maken met de server. Controleer uw internetverbinding."
-        : `Fout: ${error.message}`
-    );
+    console.error("API request failed:", error);
     throw error;
   }
 }

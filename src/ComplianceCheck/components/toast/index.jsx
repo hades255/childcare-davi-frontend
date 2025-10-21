@@ -13,7 +13,7 @@ const ToastContainer = () => {
             key={toast.id}
             id={toast.id}
             message={toast.message}
-            duration={toast.duration || 3000}
+            duration={toast.duration}
             type={toast.type}
           />
         ))}

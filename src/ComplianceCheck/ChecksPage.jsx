@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { FileKind, uploadFile, startCheck, getCheckList } from "./services/api";
 import { useChecks } from "./contexts/ChecksContext";
+import { useToast } from "./contexts/ToastContext";
 import { datesBetween } from "./helpers/date";
 import { isFormatNeedFile } from "./helpers/file";
 import CheckResults from "./components/CheckResults";
@@ -32,6 +33,7 @@ const Checkbox = memo(function Checkbox({
 });
 
 const UploadSection = memo(function UploadSection({ title, kind, format }) {
+  const { addToast } = useToast();
   const { fileMap, onAdded, onRemoved } = useChecks();
 
   const file = fileMap[kind];
@@ -52,6 +54,12 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
             try {
               const result = await uploadFile(input.files[0], kind);
               onAdded(kind, result);
+            } catch (e) {
+              addToast({
+                type: "error",
+                message: e.message || "Upload mislukt",
+              });
+              console.log(e);
             } finally {
               setIsUploading(false);
             }
@@ -60,7 +68,7 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
         input.click();
       } catch (e) {
         console.error(e);
-        alert(e.message || "Upload mislukt");
+        addToast({ type: "error", message: e.message || "Upload mislukt" });
       }
     },
     [kind, onAdded]
@@ -145,6 +153,7 @@ const uploadSectionItems = [
 ];
 
 export default function ChecksPage() {
+  const { addToast } = useToast();
   const { fileMap } = useChecks();
 
   const [enableBkr, setEnableBkr] = useState(true);
@@ -214,7 +223,12 @@ export default function ChecksPage() {
 
   async function handleStartCheck() {
     if (!validation.canStart) {
-      alert(`Missing required documents: ${validation.missing.join(", ")}`);
+      addToast({
+        type: "warn",
+        message: `Vereiste documenten ontbreken: ${validation.missing.join(
+          ", "
+        )}`,
+      });
       return;
     }
     const modules = [];
@@ -223,11 +237,17 @@ export default function ChecksPage() {
     if (enableThreeHours) modules.push("threeHours");
 
     if (enableVgc && !fileMap[FileKind.VGC_LIST]) {
-      alert("Please upload VGC list (JSON) to run VGC.");
+      addToast({
+        type: "warn",
+        message: "Upload een VGC-lijst om VGC uit te voeren.",
+      });
       return;
     }
     if (enableThreeHours && !fileMap[FileKind.CHILD_REGISTRATION]) {
-      alert("Please upload child-registration to run 3-UURs.");
+      addToast({
+        type: "warn",
+        message: "Upload een kinderregistratie om de 3-UURs te kunnen draaien.",
+      });
       return;
     }
 
@@ -253,7 +273,10 @@ export default function ChecksPage() {
       setProgressCheckId(res.check_id);
     } catch (e) {
       console.error(e);
-      alert(e.message || "Controle starten mislukt");
+      addToast({
+        type: "error",
+        message: e.message || "Controle starten mislukt",
+      });
     } finally {
       setIsStartingCheck(false);
     }
@@ -269,6 +292,12 @@ export default function ChecksPage() {
         const result = await getCheckList();
         setCheckList(result);
       } catch (error) {
+        addToast({
+          type: "error",
+          message: error.message.includes("Failed to fetch")
+            ? "Netwerkfout: Kan geen verbinding maken met de server. Controleer uw internetverbinding."
+            : `Fout: ${error.message}`,
+        });
         console.log(error);
       }
     }

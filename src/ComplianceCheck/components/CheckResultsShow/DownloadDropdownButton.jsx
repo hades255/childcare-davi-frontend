@@ -7,8 +7,10 @@ import {
   downloadBlob,
   downloadPDF,
 } from "../../helpers/download";
+import { useToast } from "../../contexts/ToastContext";
 
 export default function DownloadDropdownButton({ day, days, data }) {
+  const { addToast } = useToast();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -28,7 +30,7 @@ export default function DownloadDropdownButton({ day, days, data }) {
     if (dData) {
       download2CSV(day, [dData]);
     } else {
-      alert("Selecteer eerst de datum");
+      addToast({ type: "warn", message: "Selecteer eerst de datum" });
     }
   }, [day, data]);
 
@@ -38,7 +40,7 @@ export default function DownloadDropdownButton({ day, days, data }) {
       const json = JSON.stringify(dData, null, 2);
       downloadBlob(json, "application/json;charset=utf-8", `${day}.json`);
     } else {
-      alert("Selecteer eerst de datum");
+      addToast({ type: "warn", message: "Selecteer eerst de datum" });
     }
   }, [day, data]);
 
@@ -47,7 +49,7 @@ export default function DownloadDropdownButton({ day, days, data }) {
     if (dData) {
       downloadPDF(day, [dData]);
     } else {
-      alert("Selecteer eerst de datum");
+      addToast({ type: "warn", message: "Selecteer eerst de datum" });
     }
   }, [day, data]);
 
