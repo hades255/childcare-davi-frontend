@@ -16,6 +16,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-modal-image": "^2.6.0",
+    "react-router-dom": "^7.12.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

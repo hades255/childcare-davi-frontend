@@ -111,3 +111,17 @@ export async function getModuleDocuments(module) {
     method: "GET",
   });
 }
+
+export async function startCreatingVGCList(body) {
+  return request("/create-vgc", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export async function getCheckVGCCreatingProgress(checkId) {
+  return request(`/checks-create-vgc/${encodeURIComponent(checkId)}`, {
+    method: "GET",
+  });
+}
