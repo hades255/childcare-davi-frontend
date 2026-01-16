@@ -55,7 +55,8 @@
     "uploading": "uploaden...",
     "missingDocuments": "Ontbrekende documenten",
     "creatingFailed": "VGC lijst aanmaken mislukt",
-    "getProgressFailed": "Voortgang ophalen mislukt"
+    "getProgressFailed": "Voortgang ophalen mislukt",
+    "selectCheckId": "Selecteer een check-ID"
   },
   "common": {
     "loading": "Laden...",

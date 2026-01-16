@@ -125,3 +125,9 @@ export async function getCheckVGCCreatingProgress(checkId) {
     method: "GET",
   });
 }
+
+export async function getCheckVGCCreatingList() {
+  return request(`/checks-create-vgc/list`, {
+    method: "GET",
+  });
+}

@@ -7,6 +7,7 @@ import {
   uploadFile,
   startCreatingVGCList,
   getCheckVGCCreatingProgress,
+  getCheckVGCCreatingList,
 } from "../ComplianceCheck/services/api";
 import FileUploadCard from "../ComplianceCheck/components/FileUploadCard";
 import ComplianceCheckButton from "../ComplianceCheck/components/ComplianceCheckButton";
@@ -103,6 +104,7 @@ export default function CreateVGCPage() {
   const [progressCheckId, setProgressCheckId] = useState("");
   const [progressResult, setProgressResult] = useState(null);
   const [vgcResult, setVgcResult] = useState(null);
+  const [checkList, setCheckList] = useState([]);
 
   const validation = useMemo(() => {
     const hasStaff = fileMap[FileKind.STAFF_PLANNING];
@@ -152,6 +154,7 @@ export default function CreateVGCPage() {
       setProgressResult(null);
       setVgcResult(null);
       setProgressCheckId(res.check_id);
+      setCheckList((prev) => [...prev, res.check_id]);
     } catch (e) {
       console.error(e);
       addToast({
@@ -211,6 +214,25 @@ export default function CreateVGCPage() {
     }
   };
 
+  useEffect(() => {
+    async function getAllCheckIds() {
+      try {
+        const result = await getCheckVGCCreatingList();
+        setCheckList((result || []).map(({ check_id }) => check_id));
+      } catch (error) {
+        addToast({
+          type: "error",
+          message: error.message.includes("Failed to fetch")
+            ? t("complianceCheck.networkError")
+            : `${t("complianceCheck.error")}: ${error.message}`,
+        });
+        console.log(error);
+      }
+    }
+
+    getAllCheckIds();
+  }, [addToast, t]);
+
   return (
     <div className="w-full flex flex-col gap-3 p-4 mx-auto">
       <div className="w-full flex flex-col gap-3 min-h-[50vh]">
@@ -255,14 +277,40 @@ export default function CreateVGCPage() {
 
         <div className="border-t border-gray-200 pt-3 flex flex-col gap-2 mt-4">
           <strong>{t("createVGCList.checkProgress")}</strong>
+
           <div className="flex gap-2 items-center flex-wrap">
-            <input
+            <select
               value={progressCheckId}
               onChange={(e) => setProgressCheckId(e.target.value)}
-              placeholder={t("createVGCList.enterCheckId")}
-              className="px-2 py-1 border border-gray-300 rounded-md"
-            />
-            <Button onClick={handleGetProgress} variant="secondary">
+              className="px-2 py-1 border border-gray-300 rounded-md min-w-[260px]"
+            >
+              <option value="" disabled>
+                {t("createVGCList.selectCheckId")}
+              </option>
+
+              {checkList.map((item, idx) => {
+                // supports either: string IDs OR objects like { id, label }
+                const id = typeof item === "string" ? item : item?.id ?? "";
+                const label =
+                  typeof item === "string"
+                    ? item
+                    : item?.label ?? item?.id ?? `#${idx + 1}`;
+
+                if (!id) return null;
+
+                return (
+                  <option key={id} value={id}>
+                    {label}
+                  </option>
+                );
+              })}
+            </select>
+
+            <Button
+              onClick={handleGetProgress}
+              variant="secondary"
+              disabled={!progressCheckId}
+            >
               {t("createVGCList.getProgress")}
             </Button>
           </div>
