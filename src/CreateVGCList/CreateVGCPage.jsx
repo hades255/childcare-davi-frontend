@@ -1,6 +1,7 @@
 import { memo, useCallback, useMemo, useState, useEffect } from "react";
 import { useToast } from "../ComplianceCheck/contexts/ToastContext";
 import { useChecks } from "../ComplianceCheck/contexts/ChecksContext";
+import { useI18n } from "../contexts/i18n/I18nContext";
 import {
   FileKind,
   uploadFile,
@@ -17,6 +18,7 @@ import { downloadJSON, downloadExcel, downloadDOC } from "./utils/download";
 const UploadSection = memo(function UploadSection({ title, kind }) {
   const { addToast } = useToast();
   const { fileMap, onAdded } = useChecks();
+  const { t } = useI18n();
   const [isUploading, setIsUploading] = useState(false);
 
   const file = fileMap[kind];
@@ -35,12 +37,12 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
               onAdded(kind, result);
               addToast({
                 type: "success",
-                message: "Bestand geüpload",
+                message: t("createVGCList.fileUploaded"),
               });
             } catch (e) {
               addToast({
                 type: "error",
-                message: e.message || "Upload mislukt",
+                message: e.message || t("createVGCList.uploadFailed"),
               });
             } finally {
               setIsUploading(false);
@@ -49,10 +51,13 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
         };
         input.click();
       } catch (e) {
-        addToast({ type: "error", message: e.message || "Upload mislukt" });
+        addToast({
+          type: "error",
+          message: e.message || t("createVGCList.uploadFailed"),
+        });
       }
     },
-    [kind, onAdded, addToast]
+    [kind, onAdded, addToast, t]
   );
 
   return (
@@ -62,21 +67,32 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
         disabled={isUploading}
         variant={isUploading ? "uploading" : file ? "uploaded" : "normal"}
       >
-        {isUploading ? "uploaden..." : file ? "Bestand geüpload" : title}
+        {isUploading
+          ? t("createVGCList.uploading")
+          : file
+          ? t("createVGCList.fileUploaded")
+          : title}
       </ComplianceCheckButton>
     </FileUploadCard>
   );
 });
 
 const uploadSectionItems = [
-  { title: "Upload kindplanning", kind: FileKind.CHILD_PLANNING },
-  { title: "Upload kindregistratie", kind: FileKind.CHILD_REGISTRATION },
-  { title: "Upload personeelsplanning", kind: FileKind.STAFF_PLANNING },
+  { titleKey: "createVGCList.uploadKindPlanning", kind: FileKind.CHILD_PLANNING },
+  {
+    titleKey: "createVGCList.uploadKindRegistratie",
+    kind: FileKind.CHILD_REGISTRATION,
+  },
+  {
+    titleKey: "createVGCList.uploadPersoneelsPlanning",
+    kind: FileKind.STAFF_PLANNING,
+  },
 ];
 
 export default function CreateVGCPage() {
   const { addToast } = useToast();
   const { fileMap } = useChecks();
+  const { t } = useI18n();
 
   const [isCreating, setIsCreating] = useState(false);
   const [progressCheckId, setProgressCheckId] = useState("");
@@ -106,7 +122,7 @@ export default function CreateVGCPage() {
     if (!validation.canStart) {
       addToast({
         type: "error",
-        message: `Ontbrekende documenten: ${validation.missing.join(", ")}`,
+        message: `${t("createVGCList.missingDocuments")}: ${validation.missing.join(", ")}`,
       });
       return;
     }
@@ -129,7 +145,7 @@ export default function CreateVGCPage() {
       console.error(e);
       addToast({
         type: "error",
-        message: e.message || "VGC lijst aanmaken mislukt",
+        message: e.message || t("createVGCList.creatingFailed"),
       });
     } finally {
       setIsCreating(false);
@@ -147,7 +163,7 @@ export default function CreateVGCPage() {
     if (!progressCheckId) {
       addToast({
         type: "error",
-        message: "Voer een check ID in.",
+        message: t("createVGCList.enterCheckId"),
       });
       return;
     }
@@ -161,7 +177,7 @@ export default function CreateVGCPage() {
       console.error(e);
       addToast({
         type: "error",
-        message: e.message || "Voortgang ophalen mislukt",
+        message: e.message || t("createVGCList.getProgressFailed"),
       });
     }
   }
@@ -187,12 +203,16 @@ export default function CreateVGCPage() {
   return (
     <div className="w-full flex flex-col gap-3 p-4 mx-auto">
       <div className="w-full flex flex-col gap-3 min-h-[50vh]">
-        <h2 className="text-2xl font-bold">VGC Lijst Aanmaken</h2>
-        <p className="my-4 text-gray-800">Upload de benodigde documenten</p>
+        <h2 className="text-2xl font-bold">{t("createVGCList.title")}</h2>
+        <p className="my-4 text-gray-800">{t("createVGCList.subtitle")}</p>
 
         <div className="flex gap-4 flex-col">
           {uploadSectionItems.map((item, index) => (
-            <UploadSection key={index} {...item} />
+            <UploadSection
+              key={index}
+              title={t(item.titleKey)}
+              kind={item.kind}
+            />
           ))}
         </div>
 
@@ -203,11 +223,13 @@ export default function CreateVGCPage() {
             variant="normal"
             title={
               !validation.canStart && validation.missing.length
-                ? `Ontbrekende: ${validation.missing.join(", ")}`
+                ? `${t("createVGCList.missingDocuments")}: ${validation.missing.join(", ")}`
                 : undefined
             }
           >
-            {isCreating ? "Aanmaken…" : "Create VGC List"}
+            {isCreating
+              ? t("createVGCList.creating")
+              : t("createVGCList.createVGCList")}
           </Button>
         </div>
 
@@ -219,16 +241,16 @@ export default function CreateVGCPage() {
         )}
 
         <div className="border-t border-gray-200 pt-3 flex flex-col gap-2 mt-4">
-          <strong>Check Voortgang</strong>
+          <strong>{t("createVGCList.checkProgress")}</strong>
           <div className="flex gap-2 items-center flex-wrap">
             <input
               value={progressCheckId}
               onChange={(e) => setProgressCheckId(e.target.value)}
-              placeholder="Voer check id in"
+              placeholder={t("createVGCList.enterCheckId")}
               className="px-2 py-1 border border-gray-300 rounded-md"
             />
             <Button onClick={handleGetProgress} variant="secondary">
-              Get Progress
+              {t("createVGCList.getProgress")}
             </Button>
           </div>
         </div>
@@ -236,28 +258,30 @@ export default function CreateVGCPage() {
         {vgcResult && (
           <div className="mt-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold">VGC Lijst Resultaat</h3>
+              <h3 className="text-xl font-semibold">
+                {t("createVGCList.vgcResultTitle")}
+              </h3>
               <div className="flex gap-2">
                 <Button
                   onClick={handleDownloadJSON}
                   variant="secondary"
                   icon="download"
                 >
-                  Download JSON
+                  {t("createVGCList.downloadJSON")}
                 </Button>
                 <Button
                   onClick={handleDownloadExcel}
                   variant="secondary"
                   icon="download"
                 >
-                  Download Excel
+                  {t("createVGCList.downloadExcel")}
                 </Button>
                 <Button
                   onClick={handleDownloadDOC}
                   variant="secondary"
                   icon="download"
                 >
-                  Download DOC
+                  {t("createVGCList.downloadDOC")}
                 </Button>
               </div>
             </div>

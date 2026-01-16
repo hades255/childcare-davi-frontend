@@ -1,6 +1,10 @@
+import { useI18n } from "../contexts/i18n/I18nContext";
+
 export default function VGCResultTable({ data }) {
+  const { t } = useI18n();
+
   if (!data || typeof data !== "object") {
-    return <p>Geen data beschikbaar</p>;
+    return <p>{t("common.noData")}</p>;
   }
 
   const entries = Object.entries(data);
@@ -11,10 +15,10 @@ export default function VGCResultTable({ data }) {
         <thead className="bg-green-100">
           <tr>
             <th className="border border-gray-300 bg-green-100 text-green-700 text-sm px-4 py-2 text-left">
-              Personeel
+              {t("common.personnel")}
             </th>
             <th className="border border-gray-300 bg-green-100 text-green-700 text-sm px-4 py-2 text-left">
-              Kinderen
+              {t("common.children")}
             </th>
           </tr>
         </thead>

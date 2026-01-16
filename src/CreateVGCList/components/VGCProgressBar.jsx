@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { getCheckVGCCreatingProgress } from "../../ComplianceCheck/services/api";
+import { useI18n } from "../../contexts/i18n/I18nContext";
 import clsx from "clsx";
 
 export default function VGCProgressBar({
@@ -8,7 +9,11 @@ export default function VGCProgressBar({
   className = "",
   onComplete,
 }) {
-  const [data, setData] = useState({ status: "Beginnen…", progress: 0 });
+  const { t } = useI18n();
+  const [data, setData] = useState({
+    status: t("progress.beginning"),
+    progress: 0,
+  });
   const timeoutRef = useRef(null);
   const abortRef = useRef(null);
 
@@ -24,7 +29,7 @@ export default function VGCProgressBar({
       try {
         const res = await getCheckVGCCreatingProgress(checkId);
         setData({
-          status: res.status?.message || "Verwerking…",
+          status: res.status?.message || t("progress.processing"),
           progress: res.status?.progress || 0,
         });
         if (res.status?.message === "completed") {
@@ -56,7 +61,7 @@ export default function VGCProgressBar({
   ) : (
     <div className={clsx("space-y-2 w-full", className)} aria-live="polite">
       <div className="text-sm font-medium text-gray-800 capitalize">
-        {data.status ?? "Verwerking…"}
+        {data.status ?? t("progress.processing")}
       </div>
 
       <div

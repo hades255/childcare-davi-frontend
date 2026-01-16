@@ -3,16 +3,19 @@ import clsx from "clsx";
 import { toLocaleDateString } from "../../helpers/date";
 import { copyClipboard } from "../../helpers/clipboard";
 import { useToast } from "../../contexts/ToastContext";
+import { useI18n } from "../../../contexts/i18n/I18nContext";
 
 export default function CustomizedSelect({
   options,
   value,
   onChange,
-  placeholder = "Selecteer een item…",
+  placeholder,
   disabled = false,
   className,
 }) {
   const { addToast } = useToast();
+  const { t } = useI18n();
+  const defaultPlaceholder = placeholder || t("common.selectItem");
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -147,7 +150,7 @@ export default function CustomizedSelect({
                 )}
               </>
             ) : (
-              placeholder
+              defaultPlaceholder
             )}
           </span>
           {selected?.description ? (
@@ -185,7 +188,7 @@ export default function CustomizedSelect({
         >
           <div className="p-2 border-b bg-gray-50">
             <label className="sr-only" htmlFor="tls-search">
-              Zoekopdracht
+              {t("common.search")}
             </label>
             <input
               id="tls-search"
@@ -195,14 +198,14 @@ export default function CustomizedSelect({
                 setQuery(e.target.value);
                 setActiveIndex(0);
               }}
-              placeholder="Zoekopdracht..."
+              placeholder={t("common.search")}
               className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           <ul className="max-h-72 overflow-auto py-1" tabIndex={-1}>
             {filtered.length === 0 && (
-              <li className="px-3 py-3 text-gray-500">Geen resultaten</li>
+              <li className="px-3 py-3 text-gray-500">{t("common.noResults")}</li>
             )}
             {filtered.map((o, idx) => (
               <li

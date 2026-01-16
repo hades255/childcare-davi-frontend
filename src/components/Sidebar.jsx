@@ -1,16 +1,19 @@
 import { Link, useLocation } from "react-router-dom";
+import { useI18n } from "../contexts/i18n/I18nContext";
+import LanguageSelector from "./LanguageSelector";
 
 export default function Sidebar() {
   const location = useLocation();
+  const { t } = useI18n();
 
   const navItems = [
-    { path: "/", label: "Compliance Check" },
-    { path: "/create-vgc-list", label: "Create VGC List" },
+    { path: "/", labelKey: "sidebar.complianceCheck" },
+    { path: "/create-vgc-list", labelKey: "sidebar.createVGCList" },
   ];
 
   return (
-    <div className="w-[300px] bg-white border-r-2 border-[#23BD92]/30 min-h-screen p-4">
-      <nav className="space-y-2">
+    <div className="w-[300px] bg-white border-r-2 border-[#23BD92]/30 min-h-screen p-4 flex flex-col">
+      <nav className="space-y-2 flex-1">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -23,12 +26,15 @@ export default function Sidebar() {
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}
       </nav>
+
+      <div className="mb-4">
+        <LanguageSelector />
+      </div>
     </div>
   );
 }
-
