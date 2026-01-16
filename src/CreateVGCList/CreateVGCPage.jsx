@@ -14,7 +14,7 @@ import ComplianceCheckButton from "../ComplianceCheck/components/ComplianceCheck
 import VGCProgressBar from "./components/VGCProgressBar";
 import Button from "../ComplianceCheck/components/Button";
 import VGCResultTable from "./VGCResultTable";
-import { downloadJSON, downloadExcel, downloadDOC } from "./utils/download";
+import { downloadJSON, downloadExcel, downloadDOC, downloadTextFile } from "./utils/download";
 
 const UploadSection = memo(function UploadSection({ title, kind }) {
   const { addToast } = useToast();
@@ -198,19 +198,44 @@ export default function CreateVGCPage() {
 
   const handleDownloadJSON = () => {
     if (vgcResult) {
-      downloadJSON(vgcResult, "vgc-list.json");
+      try {
+        const data = vgcResult.result.vgc_list.map(
+          ({ child, fixed_faces }) => ({
+            [child]: fixed_faces.map(({ staff }) => staff),
+          })
+        );
+        downloadJSON(data, "vgc-list.json");
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   const handleDownloadExcel = () => {
     if (vgcResult) {
-      downloadExcel(vgcResult, "vgc-list.xlsx");
+      try {
+        const data = vgcResult.result.vgc_list.map(({ child, fixed_faces }) => [
+          child,
+          fixed_faces.map(({ staff }) => staff),
+        ]);
+        downloadExcel(data, "vgc-list.xlsx");
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
-  const handleDownloadDOC = () => {
+  const handleDownloadText = () => {
     if (vgcResult) {
-      downloadDOC(vgcResult, "vgc-list.docx");
+      try {
+        const data = vgcResult.result.vgc_list.map(({ child, fixed_faces }) => [
+          child,
+          fixed_faces.map(({ staff }) => staff),
+        ]);
+        downloadTextFile(data, "vgc-list.txt");
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -338,11 +363,11 @@ export default function CreateVGCPage() {
                   {t("createVGCList.downloadExcel")}
                 </Button>
                 <Button
-                  onClick={handleDownloadDOC}
+                  onClick={handleDownloadText}
                   variant="secondary"
                   icon="download"
                 >
-                  {t("createVGCList.downloadDOC")}
+                  {t("createVGCList.downloadTXT")}
                 </Button>
               </div>
             </div>

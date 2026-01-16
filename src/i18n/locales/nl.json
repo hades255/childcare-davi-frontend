@@ -50,6 +50,7 @@
     "downloadJSON": "Download JSON",
     "downloadExcel": "Download Excel",
     "downloadDOC": "Download DOC",
+    "downloadTXT": "Download TXT",
     "fileUploaded": "Bestand geüpload",
     "uploadFailed": "Upload mislukt",
     "uploading": "uploaden...",
