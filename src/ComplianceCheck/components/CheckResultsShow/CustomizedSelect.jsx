@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import { toLocaleDateString } from "../../helpers/date";
 import { copyClipboard } from "../../helpers/clipboard";
+import { useToast } from "../../contexts/ToastContext";
 
 export default function CustomizedSelect({
   options,
@@ -11,6 +12,8 @@ export default function CustomizedSelect({
   disabled = false,
   className,
 }) {
+  const { addToast } = useToast();
+
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -243,6 +246,10 @@ export default function CustomizedSelect({
                       e.preventDefault();
                       e.stopPropagation();
                       copyClipboard(o.check_id);
+                      addToast({
+                        type: "success",
+                        message: e.message || "ID copied",
+                      });
                     }}
                   >
                     <i>check id</i>: {o.check_id.substring(0, 8)}...

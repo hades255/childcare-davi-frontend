@@ -47,7 +47,7 @@ const Toast = ({ id, message, type, duration = 5000 }) => {
   return (
     <div
       className={clsx(
-        `w-60 my-2 px-4 py-2 rounded bg-[#cecececc] shadow-lg shadow-[#444] transition-transform`,
+        `w-60 my-2 px-4 py-2 rounded bg-[#ffffff11] shadow-lg shadow-[#44444469] transition-transform`,
         {
           "animate-toastIn": isVisible,
           "animate-toastOut": !isVisible,
