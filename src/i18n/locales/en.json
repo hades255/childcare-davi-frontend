@@ -79,7 +79,11 @@
     "children": "Children",
     "editFormat": "Edit format",
     "viewUploadedFiles": "View uploaded files",
-    "noResults": "No results"
+    "noResults": "No results",
+    "progress": "Progress",
+    "updatedAt": "Last updated",
+    "child": "Child",
+    "age": "Age"
   },
   "progress": {
     "beginning": "Starting…",
@@ -92,6 +96,15 @@
     "status": "Status",
     "statusFailed": "Failed to get file status",
     "remove": "Remove"
+  },
+  "vgc": {
+    "daysPresent": "Days present",
+    "overlapDays": "Overlap days",
+    "overlapMinutes": "Overlap minutes",
+    "coverage": "Coverage",
+    "staffPlanningRows": "Staff planning rows",
+    "childPlanningChildren": "Children in planning",
+    "childPlanningDays": "Planning days",
+    "childRegistrationDays": "Registration days"
   }
 }
-

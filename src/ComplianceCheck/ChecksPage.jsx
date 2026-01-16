@@ -48,7 +48,7 @@ const UploadSection = memo(function UploadSection({ title, kind, format }) {
         const input = document.createElement("input");
         input.type = "file";
         input.accept =
-          kind ===
+          // kind ===
           "image/*,application/pdf,application/msword,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.doc,.docx";
         input.onchange = async () => {
           if (input.files && input.files[0]) {
@@ -235,9 +235,9 @@ export default function ChecksPage() {
     if (!validation.canStart) {
       addToast({
         type: "warn",
-        message: `${t("complianceCheck.missingRequiredDocuments")}: ${validation.missing.join(
-          ", "
-        )}`,
+        message: `${t(
+          "complianceCheck.missingRequiredDocuments"
+        )}: ${validation.missing.join(", ")}`,
       });
       return;
     }
@@ -377,7 +377,9 @@ export default function ChecksPage() {
               icon={isStartingCheck ? "loader-2" : "play"}
               title={
                 !validation.canStart && validation.missing.length
-                  ? `${t("complianceCheck.missingRequiredDocuments")}: ${validation.missing.join(", ")}`
+                  ? `${t(
+                      "complianceCheck.missingRequiredDocuments"
+                    )}: ${validation.missing.join(", ")}`
                   : undefined
               }
               variant={

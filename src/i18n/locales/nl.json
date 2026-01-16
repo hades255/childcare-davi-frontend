@@ -79,7 +79,11 @@
     "children": "Kinderen",
     "editFormat": "Edit format",
     "viewUploadedFiles": "View uploaded files",
-    "noResults": "Geen resultaten"
+    "noResults": "Geen resultaten",
+    "progress": "Voortgang",
+    "updatedAt": "Laatst bijgewerkt",
+    "child": "Kind",
+    "age": "Leeftijd"
   },
   "progress": {
     "beginning": "Beginnen…",
@@ -92,6 +96,15 @@
     "status": "Status",
     "statusFailed": "Het is niet gelukt om de bestandsstatus op te halen",
     "remove": "Verwijderen"
+  },
+  "vgc": {
+    "daysPresent": "Aanwezige dagen",
+    "overlapDays": "Overlappende dagen",
+    "overlapMinutes": "Overlappende minuten",
+    "coverage": "Dekking",
+    "staffPlanningRows": "Rijen personeelsplanning",
+    "childPlanningChildren": "Kinderen in planning",
+    "childPlanningDays": "Planningsdagen",
+    "childRegistrationDays": "Registratiedagen"
   }
 }
-

@@ -28,7 +28,9 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
       try {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = "image/*,application/pdf";
+        input.accept =
+          "image/*,application/pdf,application/msword,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.doc,.docx";
+        // "image/*,application/pdf";
         input.onchange = async () => {
           if (input.files && input.files[0]) {
             setIsUploading(true);
@@ -78,7 +80,10 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
 });
 
 const uploadSectionItems = [
-  { titleKey: "createVGCList.uploadKindPlanning", kind: FileKind.CHILD_PLANNING },
+  {
+    titleKey: "createVGCList.uploadKindPlanning",
+    kind: FileKind.CHILD_PLANNING,
+  },
   {
     titleKey: "createVGCList.uploadKindRegistratie",
     kind: FileKind.CHILD_REGISTRATION,
@@ -122,21 +127,27 @@ export default function CreateVGCPage() {
     if (!validation.canStart) {
       addToast({
         type: "error",
-        message: `${t("createVGCList.missingDocuments")}: ${validation.missing.join(", ")}`,
+        message: `${t(
+          "createVGCList.missingDocuments"
+        )}: ${validation.missing.join(", ")}`,
       });
       return;
     }
 
     const documentKeys = [
-      fileMap[FileKind.STAFF_PLANNING]?.objectKey,
-      fileMap[FileKind.CHILD_PLANNING]?.objectKey,
-      fileMap[FileKind.CHILD_REGISTRATION]?.objectKey,
+      fileMap[FileKind.STAFF_PLANNING],
+      fileMap[FileKind.CHILD_PLANNING],
+      fileMap[FileKind.CHILD_REGISTRATION],
     ].filter(Boolean);
 
     try {
       setIsCreating(true);
+      const source = "flexkids";
+      const group = "";
       const res = await startCreatingVGCList({
         documentKeys,
+        source,
+        group,
       });
       setProgressResult(null);
       setVgcResult(null);
@@ -155,7 +166,7 @@ export default function CreateVGCPage() {
   function handleProgressComplete(res) {
     setProgressResult(res);
     if (res.result) {
-      setVgcResult(res.result);
+      setVgcResult(res);
     }
   }
 
@@ -171,7 +182,7 @@ export default function CreateVGCPage() {
       const res = await getCheckVGCCreatingProgress(progressCheckId);
       setProgressResult(res);
       if (res.status?.message === "completed" && res.result) {
-        setVgcResult(res.result);
+        setVgcResult(res);
       }
     } catch (e) {
       console.error(e);
@@ -223,7 +234,9 @@ export default function CreateVGCPage() {
             variant="normal"
             title={
               !validation.canStart && validation.missing.length
-                ? `${t("createVGCList.missingDocuments")}: ${validation.missing.join(", ")}`
+                ? `${t(
+                    "createVGCList.missingDocuments"
+                  )}: ${validation.missing.join(", ")}`
                 : undefined
             }
           >
@@ -292,4 +305,3 @@ export default function CreateVGCPage() {
     </div>
   );
 }
-

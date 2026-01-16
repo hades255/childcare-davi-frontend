@@ -12,7 +12,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="w-[300px] bg-white border-r-2 border-[#23BD92]/30 min-h-screen p-4 flex flex-col">
+    <div className="w-[300px] bg-white border-r-2 border-[#23BD92]/30 h-screen p-4 flex flex-col sticky top-0">
       <nav className="space-y-2 flex-1">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
