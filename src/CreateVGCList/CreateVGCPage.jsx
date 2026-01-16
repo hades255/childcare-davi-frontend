@@ -14,7 +14,12 @@ import ComplianceCheckButton from "../ComplianceCheck/components/ComplianceCheck
 import VGCProgressBar from "./components/VGCProgressBar";
 import Button from "../ComplianceCheck/components/Button";
 import VGCResultTable from "./VGCResultTable";
-import { downloadJSON, downloadExcel, downloadDOC, downloadTextFile } from "./utils/download";
+import {
+  downloadJSON,
+  downloadExcel,
+  downloadDOC,
+  downloadTextFile,
+} from "./utils/download";
 
 const UploadSection = memo(function UploadSection({ title, kind }) {
   const { addToast } = useToast();
@@ -313,22 +318,25 @@ export default function CreateVGCPage() {
                 {t("createVGCList.selectCheckId")}
               </option>
 
-              {checkList.map((item, idx) => {
-                // supports either: string IDs OR objects like { id, label }
-                const id = typeof item === "string" ? item : item?.id ?? "";
-                const label =
-                  typeof item === "string"
-                    ? item
-                    : item?.label ?? item?.id ?? `#${idx + 1}`;
+              {checkList &&
+                Array.isArray(checkList) &&
+                checkList.length > 0 &&
+                checkList.map((item, idx) => {
+                  // supports either: string IDs OR objects like { id, label }
+                  const id = typeof item === "string" ? item : item?.id ?? "";
+                  const label =
+                    typeof item === "string"
+                      ? item
+                      : item?.label ?? item?.id ?? `#${idx + 1}`;
 
-                if (!id) return null;
+                  if (!id) return null;
 
-                return (
-                  <option key={id} value={id}>
-                    {label}
-                  </option>
-                );
-              })}
+                  return (
+                    <option key={id} value={id}>
+                      {label}
+                    </option>
+                  );
+                })}
             </select>
 
             <Button

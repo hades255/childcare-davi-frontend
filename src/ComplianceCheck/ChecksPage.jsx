@@ -394,7 +394,7 @@ export default function ChecksPage() {
         </div>
       </div>
 
-      {checkList && checkList.length > 0 && (
+      {checkList && Array.isArray(checkList) && checkList.length > 0 && (
         <div className="pt-3 flex flex-col gap-2">
           <strong>{t("complianceCheck.history")}</strong>
           <div className="flex gap-2 items-center flex-wrap">
