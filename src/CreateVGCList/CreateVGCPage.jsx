@@ -35,7 +35,7 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
         const input = document.createElement("input");
         input.type = "file";
         input.accept =
-          "image/*,application/pdf,application/msword,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.doc,.docx";
+          "image/*,application/pdf,application/msword,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.doc,.docx,.xlsx,.pdf";
         // "image/*,application/pdf";
         input.onchange = async () => {
           if (input.files && input.files[0]) {
