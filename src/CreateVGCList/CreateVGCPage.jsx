@@ -65,7 +65,7 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
         });
       }
     },
-    [kind, onAdded, addToast, t]
+    [kind, onAdded, addToast, t],
   );
 
   return (
@@ -78,8 +78,8 @@ const UploadSection = memo(function UploadSection({ title, kind }) {
         {isUploading
           ? t("createVGCList.uploading")
           : file
-          ? t("createVGCList.fileUploaded")
-          : title}
+            ? t("createVGCList.fileUploaded")
+            : title}
       </ComplianceCheckButton>
     </FileUploadCard>
   );
@@ -135,7 +135,7 @@ export default function CreateVGCPage() {
       addToast({
         type: "error",
         message: `${t(
-          "createVGCList.missingDocuments"
+          "createVGCList.missingDocuments",
         )}: ${validation.missing.join(", ")}`,
       });
       return;
@@ -159,7 +159,10 @@ export default function CreateVGCPage() {
       setProgressResult(null);
       setVgcResult(null);
       setProgressCheckId(res.check_id);
-      setCheckList((prev) => [...prev, res.check_id]);
+      setCheckList((prev) => [
+        ...prev,
+        { check_id: res.check_id, updatedAt: new Date() },
+      ]);
     } catch (e) {
       console.error(e);
       addToast({
@@ -207,7 +210,7 @@ export default function CreateVGCPage() {
         const data = vgcResult.result.vgc_list.map(
           ({ child, fixed_faces }) => ({
             [child]: fixed_faces.map(({ staff }) => staff),
-          })
+          }),
         );
         downloadJSON(data, "vgc-list.json");
       } catch (error) {
@@ -248,7 +251,12 @@ export default function CreateVGCPage() {
     async function getAllCheckIds() {
       try {
         const result = await getCheckVGCCreatingList();
-        setCheckList((result || []).map(({ check_id }) => check_id));
+        setCheckList(
+          (result || []).map(({ check_id, updatedAt }) => ({
+            check_id,
+            updatedAt,
+          })),
+        );
       } catch (error) {
         addToast({
           type: "error",
@@ -287,7 +295,7 @@ export default function CreateVGCPage() {
             title={
               !validation.canStart && validation.missing.length
                 ? `${t(
-                    "createVGCList.missingDocuments"
+                    "createVGCList.missingDocuments",
                   )}: ${validation.missing.join(", ")}`
                 : undefined
             }
@@ -323,17 +331,19 @@ export default function CreateVGCPage() {
                 checkList.length > 0 &&
                 checkList.map((item, idx) => {
                   // supports either: string IDs OR objects like { id, label }
-                  const id = typeof item === "string" ? item : item?.id ?? "";
+                  const id =
+                    typeof item === "string" ? item : (item?.check_id ?? "");
                   const label =
                     typeof item === "string"
                       ? item
-                      : item?.label ?? item?.id ?? `#${idx + 1}`;
+                      : (item?.updatedAt ?? `#${idx + 1}`);
 
-                  if (!id) return null;
+                  if (!id || !label) return null;
 
                   return (
                     <option key={id} value={id}>
-                      {label}
+                      {new Date(label).toLocaleString()} {id.substring(0, 5)}...
+                      {id.substring(id.length - 5)}
                     </option>
                   );
                 })}
