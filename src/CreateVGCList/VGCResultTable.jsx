@@ -152,7 +152,14 @@ export default function VGCResultTable({ data }) {
                         className="border border-gray-300 px-4 py-2"
                         rowSpan={staffRows.length}
                       >
-                        {row.child_days_present ?? "-"}
+                        {row.child_days_present &&
+                        Array.isArray(row.child_days_present)
+                          ? row.child_days_present.map((item, index) => (
+                              <div className="text-nowrap" key={index}>
+                                {item}
+                              </div>
+                            ))
+                          : "-"}
                       </td>
                     </>
                   )}
@@ -161,7 +168,13 @@ export default function VGCResultTable({ data }) {
                     {ff.staff ?? "-"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {ff.overlap_days ?? "-"}
+                    {ff.overlap_days && Array.isArray(ff.overlap_days)
+                      ? ff.overlap_days.map((item, index) => (
+                          <div className="text-nowrap" key={index}>
+                            {item}
+                          </div>
+                        ))
+                      : "-"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {ff.overlap_minutes ?? "-"}
