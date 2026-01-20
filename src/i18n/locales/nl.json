@@ -108,5 +108,14 @@
     "childPlanningChildren": "Kinderen in planning",
     "childPlanningDays": "Planningsdagen",
     "childRegistrationDays": "Registratiedagen"
-  }
+  },
+  "days": [
+    "zo",
+    "ma",
+    "di",
+    "woe",
+    "do",
+    "vrij",
+    "za"
+  ]
 }

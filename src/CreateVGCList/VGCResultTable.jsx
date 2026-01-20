@@ -1,3 +1,4 @@
+import DateItem from "../ComplianceCheck/components/DateItem";
 import { useI18n } from "../contexts/i18n/I18nContext";
 
 function formatDate(iso) {
@@ -155,9 +156,7 @@ export default function VGCResultTable({ data }) {
                         {row.child_days_present &&
                         Array.isArray(row.child_days_present)
                           ? row.child_days_present.map((item, index) => (
-                              <div className="text-nowrap" key={index}>
-                                {item}
-                              </div>
+                              <DateItem key={index} date={item} />
                             ))
                           : "-"}
                       </td>
@@ -171,7 +170,7 @@ export default function VGCResultTable({ data }) {
                     {ff.overlap_days && Array.isArray(ff.overlap_days)
                       ? ff.overlap_days.map((item, index) => (
                           <div className="text-nowrap" key={index}>
-                            {item}
+                            <DateItem key={index} date={item} />
                           </div>
                         ))
                       : "-"}

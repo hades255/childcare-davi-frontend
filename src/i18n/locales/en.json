@@ -108,5 +108,14 @@
     "childPlanningChildren": "Children in planning",
     "childPlanningDays": "Planning days",
     "childRegistrationDays": "Registration days"
-  }
+  },
+  "days": [
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat"
+  ]
 }
